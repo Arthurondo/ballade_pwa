@@ -1,16 +1,14 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Vérifie que l'élément #map existe bien avant d'initialiser la carte
-    const mapElement = document.getElementById("map");
-    if (!mapElement) {
-        console.error("L'élément #map n'existe pas !");
-        return;
-    }
+// Initialiser la carte et centrer sur Paris (latitude: 48.8566, longitude: 2.3522)
+var map = L.map('map').setView([48.8566, 2.3522], 13);
 
-    // Initialisation de la carte centrée sur Paris (Zoom 6)
-    var map = L.map('map').setView([48.8566, 2.3522], 6);
+// Ajouter une couche de tuiles OpenStreetMap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
+// Ajouter un marqueur à Paris
+var marker = L.marker([48.8566, 2.3522]).addTo(map);
 
-    // Ajout d'un marqueur à Paris avec un message
-    var marker = L.marker([48.8566, 2.3522]).addTo(map);
-    marker.bindPopup("Bienvenue à Paris ! 🎶").openPopup();
-});
+// Ajouter une popup au marqueur
+marker.bindPopup("<b>Bienvenue à Paris !</b><br>Ceci est un marqueur.").openPopup();
