@@ -3,48 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Morceaux</title>
+    <title>Morceaux</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="index.html">🏠 Accueil</a></li>
-                <li><a href="tracks.html">🎵 Morceaux</a></li>
-                <li><a href="map.html">🗺 Carte</a></li>
-                 <li>
-                <select id="language-selector">
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇬🇧 English</option>
-                </select>
-            </li>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        <h1>Liste des Morceaux</h1>
-        <p>Sélectionnez un morceau pour voir ses détails.</p>
+<header>
+    <img src="img/logo.png" alt="Logo" class="logo">
+    <nav>
+        <ul>
+            <li><a href="index.html" data-lang="home">🏠 Accueil</a></li>
+            <li><a href="tracks.html" data-lang="tracks">🎵 Morceaux</a></li>
+            <li><a href="map.html" data-lang="map">🗺 Carte</a></li>
+        </ul>
+    </nav>
+</header>
 
-        <div class="track-list">
-            <button class="track-button" onclick="goToTrackDetail('track1.mp3', 'Titre du morceau 1', 'Artiste 1')">🎵 Morceau 1</button>
-            <button class="track-button" onclick="goToTrackDetail('track2.mp3', 'Titre du morceau 2', 'Artiste 2')">🎵 Morceau 2</button>
-            <button class="track-button" onclick="goToTrackDetail('track3.mp3', 'Titre du morceau 3', 'Artiste 3')">🎵 Morceau 3</button>
-        </div>
-    </main>
+<main>
+    <h1 data-lang="tracks_list">Liste des morceaux</h1>
+    <button onclick="openTrackDetail('track1.mp3')">Track 1</button>
+    <button onclick="openTrackDetail('track2.mp3')">Track 2</button>
+    <button onclick="openTrackDetail('track3.mp3')">Track 3</button>
+</main>
 
-    <script>
-        function goToTrackDetail(file, title, artist) {
-            localStorage.setItem("currentTrack", file);
-            localStorage.setItem("trackTitle", title);
-            localStorage.setItem("trackArtist", artist);
-            window.location.href = "track_detail.html";
-        }
-    </script>
-    <script src="lang.js"></script>
+<script>
+    function openTrackDetail(track) {
+        window.location.href = "track_detail.html?track=" + encodeURIComponent(track);
+    }
+</script>
+
+<script src="lang.js"></script>
 
 </body>
 </html>
-
-
