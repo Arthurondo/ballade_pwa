@@ -107,12 +107,12 @@ textarea {
 }
 
 #map {
-    height: 400px;
+    height: 500px;
     width: 90%;
     max-width: 800px;
-    margin: auto;
+    margin: 0 auto;
     border-radius: 10px;
-    border: 3px solid #ffcc00;
+    border: 1px solid #ffcc00;
     box-shadow: 0px 0px 15px rgba(255, 204, 0, 0.5);
 }
 nav {
