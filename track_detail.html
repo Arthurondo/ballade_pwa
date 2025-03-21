@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Morceau</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">🏠 Accueil</a></li>
+                <li><a href="tracks.html">🎵 Morceaux</a></li>
+                <li><a href="map.html">🗺 Carte</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1 id="track-title">Titre du morceau</h1>
+        <p id="track-artist">Artiste inconnu</p>
+
+        <!-- Player Audio -->
+        <audio id="audio-player" controls>
+            <source id="audio-source" src="" type="audio/mp3">
+            Votre navigateur ne supporte pas l'audio.
+        </audio>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let trackFile = localStorage.getItem("currentTrack");
+            let trackTitle = localStorage.getItem("trackTitle");
+            let trackArtist = localStorage.getItem("trackArtist");
+
+            if (trackFile) {
+                document.getElementById("audio-source").src = "music/" + trackFile;
+                document.getElementById("audio-player").load();
+                document.getElementById("track-title").innerText = trackTitle;
+                document.getElementById("track-artist").innerText = "Artiste : " + trackArtist;
+            }
+        });
+    </script>
+</body>
+</html>
