@@ -168,4 +168,11 @@ nav a {
     color: #333;
     font-weight: bold;
 }
+#language-selector {
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
 
