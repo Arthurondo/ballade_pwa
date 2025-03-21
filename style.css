@@ -169,18 +169,3 @@ nav a {
     font-weight: bold;
 }
 
-nav a:hover {
-    color: #007bff;
-}
-
-h1 {
-    text-align: center;
-    margin: 20px 0;
-}
-
-#map {
-    height: 500px;
-    width: 90%;
-    margin: 0 auto;
-    border: 1px solid #ccc;
-}
