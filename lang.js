@@ -1,54 +1,96 @@
+// Fichier: language-switcher.js
+
+// Dictionnaire de traductions
 const translations = {
-    fr: {
-        home: "🏠 Accueil",
-        tracks: "🎵 Morceaux",
-        map: "🗺 Carte",
-        welcome: "Bienvenue sur notre site musical !",
-        intro: "Découvrez une sélection de morceaux et explorez la carte.",
-        tracks_list: "Liste des morceaux",
-        select_track: "Sélectionnez un morceau pour voir ses détails.",
-        track_title: "Titre du morceau",
-        track_artist: "Artiste",
-        play: "Jouer",
-        map_title: "Carte interactive",
-        map_desc: "Explorez les emplacements associés aux morceaux."
-    },
-    en: {
-        home: "🏠 Home",
-        tracks: "🎵 Tracks",
-        map: "🗺 Map",
-        welcome: "Welcome to our music site!",
-        intro: "Discover a selection of tracks and explore the map.",
-        tracks_list: "Track list",
-        select_track: "Select a track to see its details.",
-        track_title: "Track Title",
-        track_artist: "Artist",
-        play: "Play",
-        map_title: "Interactive Map",
-        map_desc: "Explore locations associated with tracks."
-    }
+  'fr': {
+    'welcome': 'Bienvenue sur le site de musique',
+    'discover': 'Découvrez et écoutez vos morceaux préférés.',
+    'home': 'Accueil',
+    'music': 'Musiques',
+    'map': 'Carte',
+    'listen': 'Écouter',
+    'about': 'À propos'
+  },
+  'en': {
+    'welcome': 'Welcome to the music site',
+    'discover': 'Discover and listen to your favorite tracks.',
+    'home': 'Home',
+    'music': 'Music',
+    'map': 'Map',
+    'listen': 'Listen',
+    'about': 'About'
+  },
+  'es': {
+    'welcome': 'Bienvenido al sitio de música',
+    'discover': 'Descubre y escucha tus pistas favoritas.',
+    'home': 'Inicio',
+    'music': 'Música',
+    'map': 'Mapa',
+    'listen': 'Escuchar',
+    'about': 'Acerca de'
+  }
 };
 
+// Langue par défaut
+let currentLanguage = 'fr';
+
 // Fonction pour changer la langue
-function changeLanguage(lang) {
-    localStorage.setItem("language", lang);
-    
-    document.querySelectorAll("[data-lang]").forEach(element => {
-        const key = element.getAttribute("data-lang");
-        if (translations[lang][key]) {
-            element.textContent = translations[lang][key];
-        }
-    });
+function changeLanguage(language) {
+  // Mise à jour de la langue actuelle
+  currentLanguage = language;
+  
+  // Sauvegarde du choix de langue dans localStorage
+  localStorage.setItem('preferredLanguage', language);
+  
+  // Mise à jour de tous les éléments avec attribut data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.getAttribute('data-i18n');
+    if (translations[language] && translations[language][key]) {
+      element.innerHTML = translations[language][key];
+    }
+  });
+  
+  // Mise à jour des attributs placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    const key = element.getAttribute('data-i18n-placeholder');
+    if (translations[language] && translations[language][key]) {
+      element.setAttribute('placeholder', translations[language][key]);
+    }
+  });
+  
+  // Mise à jour de l'attribut title
+  document.querySelectorAll('[data-i18n-title]').forEach(element => {
+    const key = element.getAttribute('data-i18n-title');
+    if (translations[language] && translations[language][key]) {
+      element.setAttribute('title', translations[language][key]);
+    }
+  });
 }
 
-// Appliquer la langue sauvegardée au chargement
-document.addEventListener("DOMContentLoaded", function() {
-    let savedLang = localStorage.getItem("language") || "fr";
-    document.getElementById("language-selector").value = savedLang;
-    changeLanguage(savedLang);
-});
-
-// Changer la langue au changement du sélecteur
-document.getElementById("language-selector").addEventListener("change", function() {
-    changeLanguage(this.value);
+// Initialisation: récupérer la langue préférée du navigateur ou du localStorage
+document.addEventListener('DOMContentLoaded', () => {
+  // Vérifier si une langue a été sauvegardée
+  const savedLanguage = localStorage.getItem('preferredLanguage');
+  
+  if (savedLanguage && translations[savedLanguage]) {
+    currentLanguage = savedLanguage;
+  } else {
+    // Utiliser la langue du navigateur si disponible
+    const browserLanguage = navigator.language.split('-')[0];
+    if (translations[browserLanguage]) {
+      currentLanguage = browserLanguage;
+    }
+  }
+  
+  // Initialiser le sélecteur de langue
+  const languageSelector = document.getElementById('language-selector');
+  if (languageSelector) {
+    languageSelector.value = currentLanguage;
+    languageSelector.addEventListener('change', (e) => {
+      changeLanguage(e.target.value);
+    });
+  }
+  
+  // Appliquer la langue initiale
+  changeLanguage(currentLanguage);
 });
