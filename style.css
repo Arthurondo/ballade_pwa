@@ -89,12 +89,12 @@ header {
 
 #library {
   width: 90%;
-  max-width: 600px;
+  max-width: 60px;
 }
 
 #player {
   width: 80%;
-  max-width: 400px;
+  max-width: 40px;
 }
 
 /* Sélecteur de langue */
