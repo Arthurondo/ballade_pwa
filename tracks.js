@@ -32,6 +32,57 @@ function forwardAudio() {
 }
 
 function changeSpeed() {
+    document.addEventListener("DOMContentLoaded", () => {
+    const audio = document.getElementById("audio-player");
+    const playPauseButton = document.getElementById("play-pause");
+    const forwardButton = document.getElementById("forward");
+    const backwardButton = document.getElementById("backward");
+    const loopButton = document.getElementById("loop");
+    const progressBar = document.getElementById("progress-bar");
+    const currentTimeDisplay = document.getElementById("current-time");
+    const durationDisplay = document.getElementById("duration");
+
+    let isLooping = false;
+
+    playPauseButton.addEventListener("click", () => {
+        if (audio.paused) {
+            audio.play();
+            playPauseButton.innerText = "⏸";
+        } else {
+            audio.pause();
+            playPauseButton.innerText = "▶️";
+        }
+    });
+
+    forwardButton.addEventListener("click", () => audio.currentTime += 10);
+    backwardButton.addEventListener("click", () => audio.currentTime -= 10);
+
+    loopButton.addEventListener("click", () => {
+        isLooping = !isLooping;
+        audio.loop = isLooping;
+        loopButton.style.color = isLooping ? "green" : "black";
+    });
+
+    audio.addEventListener("timeupdate", () => {
+        progressBar.value = (audio.currentTime / audio.duration) * 100;
+        currentTimeDisplay.textContent = formatTime(audio.currentTime);
+    });
+
+    audio.addEventListener("loadedmetadata", () => {
+        durationDisplay.textContent = formatTime(audio.duration);
+    });
+
+    progressBar.addEventListener("input", () => {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+    });
+
+    function formatTime(time) {
+        let minutes = Math.floor(time / 60);
+        let seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    }
+});
+
     let audio = document.getElementById("audio-player");
     let speed = document.getElementById("speed-control").value;
     audio.playbackRate = speed;
