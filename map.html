@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>Carte Interactive</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="index.html">🏠 Accueil</a></li>
-            <li><a href="tracks.html">🎵 Morceaux</a></li>
-            <li><a href="map.html">🗺️ Carte</a></li>
-             <li>
-                <select id="language-selector">
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇬🇧 English</option>
-                </select>
-            </li>
-        </ul>
-    </nav>
+    <header>
+        <img src="img/logo.png" alt="Logo" class="logo">
+        <nav>
+            <ul>
+                <li><a href="index.html">🏠 Accueil</a></li>
+                <li><a href="track.html">🎵 Musiques</a></li>
+                <li><a href="map.html">🗺️ Carte</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <h1>🗺️ Carte interactive</h1>
-    <div id="map"></div>
+    <main>
+        <h1>🗺️ Carte Interactive</h1>
+        <div id="map"></div>
+    </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="map.js"></script>
-    <script src="lang.js"></script>
-
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="js/map.js"></script>
 </body>
 </html>
