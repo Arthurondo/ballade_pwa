@@ -22,8 +22,8 @@ body {
 
 /* Logo réduit */
 .logo-container img {
-  max-width: 120px; /* Logo beaucoup plus petit */
-  height: 80;
+  max-width: 40px; /* Logo beaucoup plus petit */
+  height: auto;
   margin: 10px;
 }
 
