@@ -131,3 +131,35 @@ div[id*="logo"],
         align-items: center;
     }
 }
+/* Style pour le sélecteur de langue */
+#language-selector {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: 2px solid #ffcc00;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 5px;
+  transition: all 0.3s ease;
+}
+
+#language-selector:hover {
+  background-color: rgba(255, 204, 0, 0.3);
+  border-color: white;
+}
+
+#language-selector:focus {
+  outline: none;
+  box-shadow: 0 0 5px #ffcc00;
+}
+
+/* Animation de transition pour les changements de langue */
+[data-i18n], [data-i18n-placeholder], [data-i18n-title] {
+  transition: opacity 0.3s ease;
+}
+
+/* Classe appliquée pendant le changement de langue (optionnel) */
+.language-changing {
+  opacity: 0.5;
+}
