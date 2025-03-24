@@ -23,7 +23,7 @@ body {
 /* Logo réduit */
 .logo-container img {
   max-width: 120px; /* Logo beaucoup plus petit */
-  height: auto;
+  height: 80;
   margin: 10px;
 }
 
