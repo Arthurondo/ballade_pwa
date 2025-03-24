@@ -20,11 +20,35 @@ body {
   padding: 0;
 }
 
-/* Logo réduit */
-.logo-container img {
-  max-width: 120px; /* Logo beaucoup plus petit */
-  height: auto;
-  margin: 10px;
+/* Ciblage spécifique du logo - approche multiple pour s'assurer que ça fonctionne */
+img[src*="logo"], 
+#logo, 
+header img, 
+.logo img,
+img[alt*="Association"],
+img[alt*="Ballade"],
+body > img:first-of-type,
+body > div:first-child img {
+    max-width: 100px !important; /* Force la taille maximale */
+    width: 100px !important;     /* Force la largeur directe */
+    height: auto !important;     /* Maintient le ratio */
+    transform: scale(0.6) !important; /* Réduction supplémentaire si nécessaire */
+}
+
+/* Nouvelle couleur de fond */
+body, html {
+    background-color: #1e3a5f !important; /* Bleu marine */
+    background: #1e3a5f !important;
+}
+
+/* Si le logo est en background-image sur un div */
+[class*="logo"], 
+div[id*="logo"],
+.header-logo,
+#header-logo {
+    background-size: 100px auto !important;
+    width: 100px !important;
+    height: 100px !important;
 }
 
 /* Navigation */
