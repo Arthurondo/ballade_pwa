@@ -4,33 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <header>
+        <img src="img/logo.png" alt="Logo" class="logo">
+        <nav>
+            <ul>
+                <li><a href="index.html">🏠 Accueil</a></li>
+                <li><a href="track.html">🎵 Musiques</a></li>
+                <li><a href="map.html">🗺️ Carte</a></li>
+            </ul>
+        </nav>
+        <select id="language-select">
+            <option value="fr">🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+        </select>
+    </header>
 
-<header>
-    <img src="img/logo.png" alt="Logo" class="logo">
-    <nav>
-        <ul>
-            <li><a href="index.html" data-lang="home">🏠 Accueil</a></li>
-            <li><a href="tracks.html" data-lang="tracks">🎵 Morceaux</a></li>
-            <li><a href="map.html" data-lang="map">🗺 Carte</a></li>
-            <li>
-                <select id="language-selector">
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇬🇧 English</option>
-                </select>
-            </li>
-        </ul>
-    </nav>
-</header>
+    <main>
+        <h1>Bienvenue sur le site de musique</h1>
+        <p>Découvrez et écoutez vos morceaux préférés.</p>
+    </main>
 
-<main>
-    <h1 data-lang="welcome">Bienvenue sur notre site musical !</h1>
-    <p data-lang="intro">Découvrez une sélection de morceaux et explorez la carte.</p>
-</main>
-
-<script src="js/lang.js"></script>
-
+    <script src="js/language.js"></script>
 </body>
 </html>
