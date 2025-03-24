@@ -29,8 +29,8 @@ img[alt*="Association"],
 img[alt*="Ballade"],
 body > img:first-of-type,
 body > div:first-child img {
-    max-width: 60px !important; /* Force la taille maximale */
-    width: 60px !important;     /* Force la largeur directe */
+    max-width: 100px !important; /* Force la taille maximale */
+    width: 100px !important;     /* Force la largeur directe */
     height: auto !important;     /* Maintient le ratio */
     transform: scale(0.6) !important; /* Réduction supplémentaire si nécessaire */
 }
@@ -47,8 +47,8 @@ div[id*="logo"],
 .header-logo,
 #header-logo {
     background-size: 100px auto !important;
-    width: 60px !important;
-    height: 60px !important;
+    width: 100px !important;
+    height: 100px !important;
 }
 
 /* Navigation */
