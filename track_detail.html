@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails du morceau</title>
+    <title id="page-title">Détails du morceau</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="logo-container">
-  <img src="logo_de_ballade.png" alt="Association Ballade">
-</div>
+            <img src="logo_de_ballade.png" alt="Association Ballade">
+        </div>
         <nav>
             <ul>
                 <li><a href="index.html">🏠 Accueil</a></li>
@@ -21,16 +21,26 @@
     </header>
 
     <main>
-        <h1>🎶 Détails du morceau</h1>
-        <audio id="audio-player" controls>
-            <source id="audio-source" src="" type="audio/mp3">
-        </audio>
+        <h1 id="track-title">🎶 Détails du morceau</h1>
+        
+        <section class="audio-section">
+            <h2>🎧 Écouter le morceau</h2>
+            <audio id="audio-player" controls>
+                <source id="audio-source" src="" type="audio/mp3">
+            </audio>
+            <div class="controls">
+                <button id="backward">⏪ -10s</button>
+                <button id="play-pause">▶️ Play</button>
+                <button id="forward">⏩ +10s</button>
+            </div>
+        </section>
 
-        <button id="backward">⏪ -10s</button>
-        <button id="play-pause">▶️ Play</button>
-        <button id="forward">⏩ +10s</button>
-
-        <script src="tracks.js"></script>
+        <section class="pdf-section">
+            <h2>📄 Partition du morceau</h2>
+            <iframe id="pdf-viewer" width="100%" height="500px"></iframe>
+        </section>
     </main>
+
+    <script src="tracks.js"></script>
 </body>
 </html>
