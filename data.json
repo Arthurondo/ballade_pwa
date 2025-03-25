@@ -1,0 +1,21 @@
+{
+  "tracks": [
+    {
+      "title": "Moonlight Sonata",
+      "file": "music/track1.mp3",
+      "pdf": "https://drive.google.com/file/d/1_IihMKI72m4JfB9-8zUdn_xUUdnT2LUu/view?usp=sharing"
+    },
+    {
+      "title": "Fur Elise",
+      "file": "music/track2.mp3",
+      "pdf": "https://drive.google.com/file/d/1Ha5js5kA_duvqrSXSrJTy0BG-6VkQP2i/view?usp=drive_link"
+    },
+    {
+      "title": "Clair de Lune",
+      "file": "music/clair_de_lune.mp3",
+      "pdf": "https://drive.google.com/uc?id=EXEMPLE_ID_PDF_3"
+    }
+  ]
+}
+
+  
