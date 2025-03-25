@@ -1,12 +1,12 @@
 {
   "tracks": [
     {
-      "title": "Moonlight Sonata",
+      "title": "Track 1",
       "file": "music/track1.mp3",
       "pdf": "https://drive.google.com/file/d/1_IihMKI72m4JfB9-8zUdn_xUUdnT2LUu/view?usp=sharing"
     },
     {
-      "title": "Fur Elise",
+      "title": "Track 2",
       "file": "music/track2.mp3",
       "pdf": "https://drive.google.com/file/d/1Ha5js5kA_duvqrSXSrJTy0BG-6VkQP2i/view?usp=drive_link"
     },
