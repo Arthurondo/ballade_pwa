@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (trackTitle) {
                 // 🎼 Affichage des détails du morceau sur `track_detail.html`
-                let track = data.tracks.find(t => t.title === trackTitle);
+                let track = data.json.find(t => t.title === trackTitle);
                 if (track) {
                     document.getElementById("track-title").textContent = track.title;
                     document.getElementById("audio-source").src = `music/${track.file}`;
