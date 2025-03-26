@@ -37,11 +37,13 @@
 
         <section class="pdf-section">
             <h2>📄 Partition du morceau</h2>
-            <iframe id="pdf-viewer" width="100%" height="500px"></iframe>
+            <object id="pdf-viewer" type="application/pdf" width="100%" height="500px">
+                <p>Votre navigateur ne peut pas afficher le PDF. 
+                <a id="pdf-download" href="#">Télécharger la partition</a></p>
+            </object>
         </section>
     </main>
 
     <script src="tracks.js"></script>
 </body>
 </html>
-
