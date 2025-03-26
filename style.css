@@ -215,3 +215,46 @@ header {
         align-items: center;
     }
 }
+/* Section des partitions PDF */
+.pdf-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Titre de la section PDF */
+.pdf-section h2 {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Conteneur du PDF */
+iframe#pdf-viewer {
+    width: 100%;
+    height: 600px;
+    border: none;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+/* Style pour le bouton de téléchargement */
+#downloadPDF {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+#downloadPDF:hover {
+    background: #0056b3;
+}
