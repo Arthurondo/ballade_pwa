@@ -2,13 +2,13 @@
     "tracks": [
         {
             "title": "Track 1",
-            "file": "Track1.mp3",
-            "pdf": "Track1.pdf"
+            "file": "/music/Track1.mp3",
+            "pdf": "/pdf/Track1.pdf"
         },
         {
             "title": "Track 2",
-            "file": "Track2.mp3",
-            "pdf": "Track2.pdf"
+            "file": "/music/Track2.mp3",
+            "pdf": "/pdf/Track2.pdf"
         }
     ]
 }
