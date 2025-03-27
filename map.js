@@ -1,5 +1,5 @@
-// Initialiser la carte et centrer sur Paris
-var map = L.map('map').setView([48.8566, 2.3522], 13);
+// Initialiser la carte et l'afficher sur une vue du monde entier
+var map = L.map('map').setView([20, 0], 2);  // Coordonnées approximatives pour voir toute la planète
 
 // Ajouter une couche OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
