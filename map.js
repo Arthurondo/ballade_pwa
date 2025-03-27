@@ -1,5 +1,5 @@
-// Initialiser la carte et l'afficher sur une vue du monde entier
-var map = L.map('map').setView([20, 0], 2);  // Coordonnées approximatives pour voir toute la planète
+// Initialiser la carte centrée sur le monde entier
+var map = L.map('map').setView([20, 0], 2);
 
 // Ajouter une couche OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -10,16 +10,21 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Charger les marqueurs enregistrés dans le localStorage
 let savedMarkers = JSON.parse(localStorage.getItem("markers")) || [];
 
-// Ajouter chaque marqueur enregistré
-savedMarkers.forEach(coord => {
-    L.marker(coord).addTo(map);
+// Ajouter chaque marqueur enregistré avec une popup contenant un titre
+savedMarkers.forEach(markerData => {
+    var marker = L.marker(markerData.coords).addTo(map);
+    marker.bindPopup(`<b>${markerData.title}</b>`);  // Ajoute un titre au clic
 });
 
 // Ajouter un marqueur en cliquant sur la carte
 map.on('click', function(e) {
-    var newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
-    
-    // Ajouter aux marqueurs sauvegardés
-    savedMarkers.push([e.latlng.lat, e.latlng.lng]);
-    localStorage.setItem("markers", JSON.stringify(savedMarkers));
+    var title = prompt("Entrez le titre du morceau pour ce lieu :"); // Demande un titre
+    if (title) {
+        var newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+        newMarker.bindPopup(`<b>${title}</b>`);  // Ajoute le titre dans la popup
+
+        // Sauvegarder les marqueurs avec titres
+        savedMarkers.push({ coords: [e.latlng.lat, e.latlng.lng], title: title });
+        localStorage.setItem("markers", JSON.stringify(savedMarkers));
+    }
 });
