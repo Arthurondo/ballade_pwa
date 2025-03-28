@@ -1,4 +1,6 @@
-/* Variables globales */
+/* ============================== */
+/*          VARIABLES GLOBALES     */
+/* ============================== */
 :root {
   --primary-color: #ffcc00;
   --secondary-color: #ff6600;
@@ -7,30 +9,40 @@
   --gradient-bg: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
   --box-shadow: 0px 0px 15px rgba(255, 204, 0, 0.5);
   --border: 3px solid var(--primary-color);
-  --main-bg-color: #1e3a5f; /* Nouvelle couleur de fond (bleu marine) remplaçant le noir */
+  --main-bg-color: #1e3a5f;
+  --primary-blue: #76b7e1;
+  --text-color: #333;
+  --background-color: #f0f0f0;
 }
 
-/* Base */
+/* ============================== */
+/*          STYLES GÉNÉRAUX       */
+/* ============================== */
 body {
-  font-family: 'Press Start 2P', cursive;
-  background: var(--main-bg-color);
-  color: white;
-  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
-/* Logo réduit */
+/* ============================== */
+/*          HEADER & NAVIGATION   */
+/* ============================== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
 .logo-container img {
-  max-width: 40px; /* Logo beaucoup plus petit */
+  max-width: 40px;
   height: auto;
   margin: 10px;
-}
-
-/* Navigation */
-nav {
-  background: rgba(0, 0, 0, 0.4); /* Fond semi-transparent */
-  padding: 10px 0;
 }
 
 nav ul {
@@ -42,42 +54,33 @@ nav ul {
   gap: 20px;
 }
 
-nav ul li {
-  display: inline;
-}
-
 nav ul li a {
-  color: white;
   text-decoration: none;
+  color: var(--text-color);
   font-size: 16px;
   padding: 8px 12px;
   transition: 0.3s;
 }
 
 nav ul li a:hover {
+  color: var(--primary-blue);
   background: var(--primary-color);
-  color: #222;
   border-radius: 5px;
 }
 
-/* Header */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--dark-bg);
-  padding: 8px 15px;
-  border-bottom: 3px solid var(--primary-color);
-  box-shadow: 0px 3px 8px rgba(255, 204, 0, 0.5);
+/* ============================== */
+/*          SECTIONS PRINCIPALES  */
+/* ============================== */
+
+/* Section Bannière */
+.welcome-banner {
+  background: linear-gradient(to right, rgba(30, 58, 95, 0.7), rgba(30, 58, 95, 0.9));
+  padding: 20px;
+  border-top: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
 }
 
-#title {
-  flex-grow: 1;
-  font-size: 1.3em;
-  text-shadow: 2px 2px 4px rgba(255, 204, 0, 0.8);
-}
-
-/* Conteneurs */
+/* Bibliothèque et lecteur audio */
 #library, #player {
   margin: 25px auto;
   background: var(--dark-bg);
@@ -87,401 +90,96 @@ header {
   border: var(--border);
 }
 
-#library {
-  width: 90%;
-  max-width: 60px;
-}
+#library { max-width: 60px; }
+#player { max-width: 40px; }
 
-#player {
-  width: 80%;
-  max-width: 40px;
-}
-
-/* Sélecteur de langue */
-#language-selector {
-  font-size: 14px;
-  padding: 4px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  cursor: pointer;
-}
-
-/* Bannière d'accueil */
-.welcome-banner {
-  background: linear-gradient(to right, rgba(30, 58, 95, 0.7), rgba(30, 58, 95, 0.9));
-  padding: 20px;
-  border-top: 2px solid var(--primary-color);
-  border-bottom: 2px solid var(--primary-color);
-}
-/* 🗺️ Carte interactive */
+/* Carte interactive */
 #map-container {
-    margin: 30px auto;
-    width: 90%;
-    max-width: 800px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 12px;
-    box-shadow: 0px 0px 15px rgba(255, 204, 0, 0.5);
-    border: 2px solid #ffcc00;
+  margin: 30px auto;
+  width: 90%;
+  max-width: 800px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  border: 2px solid var(--primary-color);
 }
 
 #map {
-    height: 450px;
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ffcc00;
+  height: 450px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--primary-color);
 }
 
-/* Styles pour les marqueurs de la carte */
-.map-marker {
-    color: #ffcc00;
-    font-size: 1em;
-    font-weight: bold;
-}
-
-.map-popup {
-    max-width: 250px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 5px;
-    font-size: 0.9em;
-}
-
-.map-popup img {
-    max-width: 100%;
-    border-radius: 5px;
-    margin-bottom: 8px;
-}
-
-/* Contrôles de la carte */
+/* ============================== */
+/*        ÉLÉMENTS INTERACTIFS    */
+/* ============================== */
 .map-controls {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 .map-controls button {
-    background: linear-gradient(45deg, #ffcc00, #ff6600);
-    border: 1px solid white;
-    color: black;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.8em;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: 0.3s;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  border: 1px solid white;
+  color: black;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.8em;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
 .map-controls button:hover {
-    background: linear-gradient(45deg, #ff6600, #ff0000);
-    transform: scale(1.05);
+  background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+  transform: scale(1.05);
 }
 
-/* Style pour la légende de la carte */
-.map-legend {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-}
-
-.legend-color {
-    width: 15px;
-    height: 15px;
-    margin-right: 5px;
-    border-radius: 3px;
-}
-
-/* Responsive pour la carte */
-@media (max-width: 768px) {
-    #map {
-        height: 350px;
-    }
-    
-    .map-controls {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-/* Section des partitions PDF */
-.pdf-section {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* Titre de la section PDF */
-.pdf-section h2 {
-    color: #333;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-/* Conteneur du PDF */
-iframe#pdf-viewer {
-    width: 100%;
-    height: 600px;
-    border: none;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-}
-
-/* Style pour le bouton de téléchargement */
+/* Bouton de téléchargement */
 #downloadPDF {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: 0.3s;
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
 #downloadPDF:hover {
-    background: #0056b3;
-}
-:root {
-    --primary-blue: #76b7e1;
-    --text-color: #333;
-    --background-color: #f0f0f0;
+  background: #0056b3;
 }
 
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 50px;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.logo-container img {
-    max-height: 50px;
-}
-
-nav ul {
-    display: flex;
-    list-style: none;
-    gap: 20px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: var(--text-color);
-    font-weight: 500;
-    transition: color 0.3s;
-}
-
-nav ul li a:hover {
-    color: var(--primary-blue);
-}
-
-#language-select {
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 4px;
-}
-
-.hero-section {
-    position: relative;
-    height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
-}
-
-.hero-illustration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-}
-
-.background-houses {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('background-houses.png') no-repeat center center;
-    background-size: cover;
-    opacity: 0.5;
-}
-
-.musicians {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-}
-
-.musician-grid {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 20px;
-    width: 100%;
-    height: 100%;
-    background: url('musicians-silhouettes.png') no-repeat bottom center;
-    background-size: contain;
-}
-
-.decorative-elements {
-    position: absolute;
-}
-
-.bird {
-    position: absolute;
-    top: 50px;
-    right: 50px;
-    width: 100px;
-    height: 100px;
-    background: url('bird.png') no-repeat;
-    background-size: contain;
-}
-
-.tree {
-    position: absolute;
-    bottom: 50px;
-    right: 50px;
-    width: 200px;
-    height: 300px;
-    background: url('tree.png') no-repeat;
-    background-size: contain;
-}
-
-.wagon {
-    position: absolute;
-    bottom: 50px;
-    left: 50px;
-    width: 150px;
-    height: 100px;
-    background: url('wagon.png') no-repeat;
-    background-size: contain;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding-top: 50px;
-}
-
-.hero-content h1 {
-    font-size: 2.5rem;
-    color: var(--text-color);
-    margin-bottom: 30px;
-}
-
-.cta-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.cta-button {
-    text-decoration: none;
-    padding: 12px 24px;
-    background-color: var(--primary-blue);
-    color: white;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.cta-button:hover {
-    background-color: darken(var(--primary-blue), 10%);
-}
-
+/* ============================== */
+/*        RESPONSIVE DESIGN       */
+/* ============================== */
 @media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        padding: 15px;
-    }
-
-    nav ul {
-        margin-top: 15px;
-    }
-
-    .hero-content h1 {
-        font-size: 1.8rem;
-    }
-
-    .cta-buttons {
-        flex-direction: column;
-    }
-}
-.hero-section {
-    position: relative;
-    height: calc(100vh - 80px);
-    display: flex;
+  header {
     flex-direction: column;
-}
+    padding: 15px;
+  }
 
-.hero-illustration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-    filter: contrast(1.2) brightness(0.9); /* Augmente le contraste et réduit la luminosité */
-}
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
 
-.background-houses {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('background-houses.png') no-repeat center center;
-    background-size: cover;
-    opacity: 0.7; /* Rend l’image plus visible */
-}
-.hero-illustration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-    background: url('background-houses.png') no-repeat center center;
-    background-size: cover;
-    opacity: 1; /* Assurer une opacité totale */
-    filter: none; /* Désactiver tout éclaircissement inutile */
-}
+  #map {
+    height: 350px;
+  }
+  
+  .map-controls {
+    flex-direction: column;
+    align-items: center;
+  }
 
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+}
