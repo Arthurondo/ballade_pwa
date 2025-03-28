@@ -228,7 +228,7 @@ nav ul li a:hover {
     /* Couche semi-transparente blanche pour lisibilité */
     rgba(255, 255, 255, 0.85),
     /* Votre image de fond */
-    url('renard.jpg') center/cover no-repeat;
+    url('image_ballade1.jpg') center/cover no-repeat;
   
   padding: 3rem;
   border-radius: 10px;
