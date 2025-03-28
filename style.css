@@ -1,487 +1,223 @@
-/* Variables globales */
+/* ============================================= */
+/* VARIABLES GLOBALES & RESET */
+/* ============================================= */
 :root {
+  /* Couleurs */
   --primary-color: #ffcc00;
   --secondary-color: #ff6600;
   --accent-color: #ff0000;
+  --primary-blue: #76b7e1;
+  --text-color: #333;
+  --background-color: #f0f0f0;
   --dark-bg: rgba(0, 0, 0, 0.8);
-  --gradient-bg: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+  
+  /* Effets */
   --box-shadow: 0px 0px 15px rgba(255, 204, 0, 0.5);
   --border: 3px solid var(--primary-color);
-  --main-bg-color: #1e3a5f; /* Nouvelle couleur de fond (bleu marine) remplaçant le noir */
+  --gradient-bg: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
 }
 
-/* Base */
-body {
-  font-family: 'Press Start 2P', cursive;
-  background: var(--main-bg-color);
-  color: white;
-  text-align: center;
+/* Reset & Base */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Logo réduit */
+body {
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.6;
+}
+
+/* ============================================= */
+/* STRUCTURE PRINCIPALE */
+/* ============================================= */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+main {
+  min-height: calc(100vh - 80px);
+  position: relative;
+}
+
+/* ============================================= */
+/* COMPOSANTS */
+/* ============================================= */
+
+/* Logo */
 .logo-container img {
-  max-width: 40px; /* Logo beaucoup plus petit */
-  height: auto;
-  margin: 10px;
+  max-height: 50px;
+  transition: transform 0.3s;
+}
+
+.logo-container img:hover {
+  transform: scale(1.05);
 }
 
 /* Navigation */
-nav {
-  background: rgba(0, 0, 0, 0.4); /* Fond semi-transparent */
-  padding: 10px 0;
-}
-
 nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
-  justify-content: center;
+  list-style: none;
   gap: 20px;
 }
 
-nav ul li {
-  display: inline;
-}
-
 nav ul li a {
-  color: white;
   text-decoration: none;
-  font-size: 16px;
+  color: var(--text-color);
+  font-weight: 500;
   padding: 8px 12px;
-  transition: 0.3s;
+  border-radius: 5px;
+  transition: all 0.3s;
 }
 
 nav ul li a:hover {
-  background: var(--primary-color);
-  color: #222;
-  border-radius: 5px;
-}
-
-/* Header */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--dark-bg);
-  padding: 8px 15px;
-  border-bottom: 3px solid var(--primary-color);
-  box-shadow: 0px 3px 8px rgba(255, 204, 0, 0.5);
-}
-
-#title {
-  flex-grow: 1;
-  font-size: 1.3em;
-  text-shadow: 2px 2px 4px rgba(255, 204, 0, 0.8);
-}
-
-/* Conteneurs */
-#library, #player {
-  margin: 25px auto;
-  background: var(--dark-bg);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: var(--box-shadow);
-  border: var(--border);
-}
-
-#library {
-  width: 90%;
-  max-width: 60px;
-}
-
-#player {
-  width: 80%;
-  max-width: 40px;
+  color: var(--primary-blue);
+  background-color: rgba(118, 183, 225, 0.1);
 }
 
 /* Sélecteur de langue */
-#language-selector {
-  font-size: 14px;
-  padding: 4px;
-  border-radius: 5px;
+#language-select {
   border: 1px solid #ddd;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: white;
   cursor: pointer;
 }
 
-/* Bannière d'accueil */
-.welcome-banner {
-  background: linear-gradient(to right, rgba(30, 58, 95, 0.7), rgba(30, 58, 95, 0.9));
-  padding: 20px;
-  border-top: 2px solid var(--primary-color);
-  border-bottom: 2px solid var(--primary-color);
-}
-/* 🗺️ Carte interactive */
-#map-container {
-    margin: 30px auto;
-    width: 90%;
-    max-width: 800px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 12px;
-    box-shadow: 0px 0px 15px rgba(255, 204, 0, 0.5);
-    border: 2px solid #ffcc00;
-}
-
-#map {
-    height: 450px;
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ffcc00;
-}
-
-/* Styles pour les marqueurs de la carte */
-.map-marker {
-    color: #ffcc00;
-    font-size: 1em;
-    font-weight: bold;
-}
-
-.map-popup {
-    max-width: 250px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 5px;
-    font-size: 0.9em;
-}
-
-.map-popup img {
-    max-width: 100%;
-    border-radius: 5px;
-    margin-bottom: 8px;
-}
-
-/* Contrôles de la carte */
-.map-controls {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.map-controls button {
-    background: linear-gradient(45deg, #ffcc00, #ff6600);
-    border: 1px solid white;
-    color: black;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.8em;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.map-controls button:hover {
-    background: linear-gradient(45deg, #ff6600, #ff0000);
-    transform: scale(1.05);
-}
-
-/* Style pour la légende de la carte */
-.map-legend {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-right: 15px;
-}
-
-.legend-color {
-    width: 15px;
-    height: 15px;
-    margin-right: 5px;
-    border-radius: 3px;
-}
-
-/* Responsive pour la carte */
-@media (max-width: 768px) {
-    #map {
-        height: 350px;
-    }
-    
-    .map-controls {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-/* Section des partitions PDF */
-.pdf-section {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* Titre de la section PDF */
-.pdf-section h2 {
-    color: #333;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-/* Conteneur du PDF */
-iframe#pdf-viewer {
-    width: 100%;
-    height: 600px;
-    border: none;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-}
-
-/* Style pour le bouton de téléchargement */
-#downloadPDF {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-#downloadPDF:hover {
-    background: #0056b3;
-}
-:root {
-    --primary-blue: #76b7e1;
-    --text-color: #333;
-    --background-color: #f0f0f0;
-}
-
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 50px;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.logo-container img {
-    max-height: 50px;
-}
-
-nav ul {
-    display: flex;
-    list-style: none;
-    gap: 20px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: var(--text-color);
-    font-weight: 500;
-    transition: color 0.3s;
-}
-
-nav ul li a:hover {
-    color: var(--primary-blue);
-}
-
-#language-select {
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 4px;
-}
-
+/* Hero Section */
 .hero-section {
-    position: relative;
-    height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hero-illustration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-}
-
-.background-houses {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('background-houses.png') no-repeat center center;
-    background-size: cover;
-    opacity: 0.5;
-}
-
-.musicians {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-}
-
-.musician-grid {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 20px;
-    width: 100%;
-    height: 100%;
-    background: url('musicians-silhouettes.png') no-repeat bottom center;
-    background-size: contain;
-}
-
-.decorative-elements {
-    position: absolute;
-}
-
-.bird {
-    position: absolute;
-    top: 50px;
-    right: 50px;
-    width: 100px;
-    height: 100px;
-    background: url('bird.png') no-repeat;
-    background-size: contain;
-}
-
-.tree {
-    position: absolute;
-    bottom: 50px;
-    right: 50px;
-    width: 200px;
-    height: 300px;
-    background: url('tree.png') no-repeat;
-    background-size: contain;
-}
-
-.wagon {
-    position: absolute;
-    bottom: 50px;
-    left: 50px;
-    width: 150px;
-    height: 100px;
-    background: url('wagon.png') no-repeat;
-    background-size: contain;
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.9;
 }
 
 .hero-content {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding-top: 50px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3rem;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 800px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .hero-content h1 {
-    font-size: 2.5rem;
-    color: var(--text-color);
-    margin-bottom: 30px;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
 }
 
+/* Boutons CTA */
 .cta-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 2rem;
 }
 
 .cta-button {
-    text-decoration: none;
-    padding: 12px 24px;
-    background-color: var(--primary-blue);
-    color: white;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s;
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: var(--primary-blue);
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: all 0.3s;
 }
 
 .cta-button:hover {
-    background-color: darken(var(--primary-blue), 10%);
+  background-color: #5a9ec7;
+  transform: translateY(-2px);
 }
 
+/* ============================================= */
+/* SECTIONS SPÉCIFIQUES */
+/* ============================================= */
+
+/* Section Carte */
+#map-container {
+  margin: 2rem auto;
+  width: 90%;
+  max-width: 800px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+#map {
+  height: 450px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Section PDF */
+.pdf-section {
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  max-width: 800px;
+}
+
+/* ============================================= */
+/* RESPONSIVE */
+/* ============================================= */
 @media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        padding: 15px;
-    }
-
-    nav ul {
-        margin-top: 15px;
-    }
-
-    .hero-content h1 {
-        font-size: 1.8rem;
-    }
-
-    .cta-buttons {
-        flex-direction: column;
-    }
-}
-.hero-section {
-    position: relative;
-    height: calc(100vh - 80px);
-    display: flex;
+  header {
     flex-direction: column;
+    padding: 15px;
+  }
+
+  nav ul {
+    margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #map {
+    height: 350px;
+  }
 }
 
-.hero-illustration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-    filter: contrast(1.2) brightness(0.9); /* Augmente le contraste et réduit la luminosité */
+@media (max-width: 480px) {
+  .hero-content {
+    padding: 2rem 1rem;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.5rem;
+  }
 }
-
-.background-houses {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('background-houses.png') no-repeat center center;
-    background-size: cover;
-    opacity: 0.7; /* Rend l’image plus visible */
-}
-.hero-illustration {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    overflow: hidden;
-    background: url('background-houses.png') no-repeat center center;
-    background-size: cover;
-    opacity: 1; /* Assurer une opacité totale */
-    filter: none; /* Désactiver tout éclaircissement inutile */
-}
-
