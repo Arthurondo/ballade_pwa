@@ -443,3 +443,31 @@ nav ul li a:hover {
         flex-direction: column;
     }
 }
+.hero-section {
+    position: relative;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-illustration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    filter: contrast(1.2) brightness(0.9); /* Augmente le contraste et réduit la luminosité */
+}
+
+.background-houses {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('background-houses.png') no-repeat center center;
+    background-size: cover;
+    opacity: 0.7; /* Rend l’image plus visible */
+}
