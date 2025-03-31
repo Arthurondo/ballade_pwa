@@ -3,30 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Morceaux</title>
+    <title>Liste des Morceaux</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="style.css"> <!-- CSS externe -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Gestion des Morceaux</h1>
-    
-    <div id="message"></div>
-    
-    <form id="trackForm">
-        <!-- Formulaire vide pour l'exemple -->
-    </form>
-    
-    <div id="existing-tracks">
-        <!-- Contenu généré dynamiquement -->
-    </div>
+    <header>
+        <h1>Ballade - Liste des Morceaux</h1>
+        <nav>
+            <a href="index.html">Accueil</a>
+            <a href="map.html">Carte</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="track-list">
+            <h2>Morceaux enregistrés</h2>
+            <div class="tracks-container">
+                <!-- Les morceaux seront chargés ici -->
+            </div>
+        </section>
+
+        <section id="player">
+            <h3>Lecteur audio</h3>
+            <audio id="audio-player" controls></audio>
+        </section>
+    </main>
 
     <script>
         // Configuration Supabase
-        const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = supabase.createClient(
+            'https://sxwppdcaahnzhkqdvdpd.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc'
+        );
 
-        // [Le reste du JavaScript reste identique...]
+        // Charger les morceaux au démarrage
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadTracks();
+        });
+
+        // Fonction pour charger les morceaux
+        async function loadTracks() {
+            const { data: tracks, error } = await supabase
+                .from('tracks')
+                .select(`
+                    id,
+                    title,
+                    artist,
+                    audio_url,
+                    countries (name)
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Erreur:', error);
+                return;
+            }
+
+            const container = document.querySelector('.tracks-container');
+            container.innerHTML = '';
+
+            if (tracks.length === 0) {
+                container.innerHTML = '<p>Aucun morceau trouvé</p>';
+                return;
+            }
+
+            tracks.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'track';
+                trackElement.innerHTML = `
+                    <h3>${track.title}</h3>
+                    <p>Artiste: ${track.artist}</p>
+                    <p>Pays: ${track.countries?.name || 'Inconnu'}</p>
+                    <button onclick="playTrack('${track.audio_url}')">Écouter</button>
+                    <a href="track-details.html?id=${track.id}">Détails</a>
+                `;
+                container.appendChild(trackElement);
+            });
+        }
+
+        // Fonction pour jouer un morceau
+        window.playTrack = function(audioUrl) {
+            if (!audioUrl) return;
+            const player = document.getElementById('audio-player');
+            player.src = audioUrl;
+            player.play();
+        };
     </script>
 </body>
 </html>
