@@ -3,29 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des morceaux</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ajouter un Morceau</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css"> <!-- CSS externe -->
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-  <img src="logo_de_ballade.png" alt="Association Ballade">
-</div>
-        <nav>
-            <ul>
-                <li><a href="index.html">🏠 Accueil</a></li>
-                <li><a href="tracks.html">🎵 Musiques</a></li>
-                <li><a href="map.html">🗺️ Carte</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <h1>🎵 Liste des morceaux</h1>
-        <div class="track-list">
-            <button onclick="window.location.href='track_detail.html?track=track1.mp3'">Track 1</button>
-            <button onclick="window.location.href='track_detail.html?track=track2.mp3'">Track 2</button>
+    <h1>Ajouter un nouveau morceau</h1>
+    
+    <form id="trackForm">
+        <div class="form-group">
+            <label for="title">Titre du morceau:</label>
+            <input type="text" id="title" required>
         </div>
-    </main>
+        
+        <div class="form-group">
+            <label for="artist">Artiste:</label>
+            <input type="text" id="artist" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="country">Pays:</label>
+            <select id="country" required>
+                <option value="">-- Sélectionnez un pays --</option>
+                <!-- Options chargées dynamiquement -->
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="audio_url">URL audio (optionnel):</label>
+            <input type="url" id="audio_url">
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description (optionnel):</label>
+            <textarea id="description" rows="4"></textarea>
+        </div>
+        
+        <button type="submit">Ajouter le morceau</button>
+    </form>
+    
+    <div id="message"></div>
+    
+    <script src="add-track.js"></script>
 </body>
 </html>
