@@ -250,3 +250,48 @@ nav ul li a:hover {
     url('image.png') center/cover no-repeat;
 }
 */
+#map {
+    height: 600px;
+    width: 90%;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+#loading {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #666;
+}
+
+.tracks-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.tracks-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.tracks-list a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: block;
+    padding: 3px 0;
+}
+
+.tracks-list a:hover {
+    color: #e74c3c;
+    text-decoration: underline;
+}
+
+/* Style pour les popups Leaflet */
+.leaflet-popup-content {
+    min-width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+}
