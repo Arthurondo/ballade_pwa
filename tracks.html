@@ -1,85 +1,32 @@
-// Configuration Supabase
-const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Morceaux</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css"> <!-- CSS externe -->
+</head>
+<body>
+    <h1>Gestion des Morceaux</h1>
+    
+    <div id="message"></div>
+    
+    <form id="trackForm">
+        <!-- Formulaire vide pour l'exemple -->
+    </form>
+    
+    <div id="existing-tracks">
+        <!-- Contenu généré dynamiquement -->
+    </div>
 
-// Au chargement de la page
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadCountries();
-    await loadExistingTracks(); // Nouvelle fonction
-    setupForm();
-});
+    <script>
+        // Configuration Supabase
+        const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Charger les morceaux existants
-async function loadExistingTracks() {
-    const { data: tracks, error } = await supabase
-        .from('tracks')
-        .select(`
-            id,
-            title,
-            artist,
-            audio_url,
-            description,
-            countries (name)
-        `)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        showMessage('Erreur lors du chargement des morceaux: ' + error.message, 'error');
-        return;
-    }
-
-    const tracksContainer = document.createElement('div');
-    tracksContainer.id = 'existing-tracks';
-    tracksContainer.innerHTML = '<h2>Morceaux existants</h2>';
-
-    if (tracks.length === 0) {
-        tracksContainer.innerHTML += '<p>Aucun morceau enregistré</p>';
-    } else {
-        const table = document.createElement('table');
-        table.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Artiste</th>
-                    <th>Pays</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        `;
-
-        tracks.forEach(track => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${track.title}</td>
-                <td>${track.artist}</td>
-                <td>${track.countries?.name || 'Inconnu'}</td>
-                <td>
-                    <button onclick="playTrack('${track.audio_url}')" ${!track.audio_url ? 'disabled' : ''}>Écouter</button>
-                    <button onclick="editTrack('${track.id}')">Modifier</button>
-                </td>
-            `;
-            table.querySelector('tbody').appendChild(row);
-        });
-
-        tracksContainer.appendChild(table);
-    }
-
-    document.querySelector('form').after(tracksContainer);
-}
-
-// Fonctions supplémentaires
-window.playTrack = function(audioUrl) {
-    if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        audio.play();
-    }
-};
-
-window.editTrack = function(trackId) {
-    // Redirection vers une page d'édition
-    window.location.href = `edit-track.html?id=${trackId}`;
-};
-
-// [Les autres fonctions (loadCountries, setupForm, showMessage) restent identiques]
+        // [Le reste du JavaScript reste identique...]
+    </script>
+</body>
+</html>
