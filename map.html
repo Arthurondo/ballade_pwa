@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte Interactive des Grands Pays</title>
+    <title>Carte Musicale Interactive</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -22,8 +23,9 @@
     </header>
 
     <main>
-        <h1 class="map-title">🗺️ Carte des 10 Plus Grands Pays</h1>
-        <div id="map" class="map-container"></div>
+        <h1>🌍 Carte Musicale Mondiale</h1>
+        <div id="map"></div>
+        <div id="loading">Chargement des données...</div>
     </main>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
