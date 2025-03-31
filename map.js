@@ -1,72 +1,91 @@
-// map.js
-// Initialisation de la carte centrée sur le monde
-var map = L.map('map').setView([20, 0], 2);
+// Configuration Supabase
+const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
+const supabaseKey = 'eyJhbGci0iJIUzI1NiIsInR5cCIGIkpXVCJ9.eyJpc3Mi0iJ';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Ajouter la couche OpenStreetMap
+// Initialisation de la carte
+const map = L.map('map').setView([20, 0], 2);
+
+// Couche OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Coordonnées des 10 plus grands pays (latitude, longitude)
-const bigCountries = [
-    { name: "Russie", coords: [61.5240, 105.3188], area: "17.1M km²" },
-    { name: "Canada", coords: [56.1304, -106.3468], area: "9.98M km²" },
-    { name: "Chine", coords: [35.8617, 104.1954], area: "9.59M km²" },
-    { name: "États-Unis", coords: [37.0902, -95.7129], area: "9.52M km²" },
-    { name: "Brésil", coords: [-14.2350, -51.9253], area: "8.51M km²" },
-    { name: "Australie", coords: [-25.2744, 133.7751], area: "7.69M km²" },
-    { name: "Inde", coords: [20.5937, 78.9629], area: "3.29M km²" },
-    { name: "Argentine", coords: [-38.4161, -63.6167], area: "2.78M km²" },
-    { name: "Kazakhstan", coords: [48.0196, 66.9237], area: "2.72M km²" },
-    { name: "Algérie", coords: [28.0339, 1.6596], area: "2.38M km²" }
-];
+// Fonction pour charger les pays et morceaux
+async function loadCountriesAndTracks() {
+    try {
+        // 1. Charger les pays depuis Supabase
+        const { data: countries, error: countriesError } = await supabase
+            .from('countries')
+            .select('*');
+        
+        if (countriesError) throw countriesError;
 
-// Icône personnalisée
-const customIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32]
+        // 2. Charger les morceaux depuis Supabase
+        const { data: tracks, error: tracksError } = await supabase
+            .from('tracks')
+            .select('*');
+        
+        if (tracksError) throw tracksError;
+
+        // 3. Organiser les morceaux par pays
+        const tracksByCountry = {};
+        tracks.forEach(track => {
+            if (!tracksByCountry[track.country_id]) {
+                tracksByCountry[track.country_id] = [];
+            }
+            tracksByCountry[track.country_id].push(track);
+        });
+
+        // 4. Ajouter les marqueurs sur la carte
+        countries.forEach(country => {
+            const countryTracks = tracksByCountry[country.id] || [];
+            
+            const marker = L.marker([country.latitude, country.longitude]).addTo(map);
+            
+            let popupContent = `<b>${country.name}</b><br><br>`;
+            
+            if (countryTracks.length > 0) {
+                popupContent += '<div class="tracks-list"><h4>Morceaux :</h4><ul>';
+                countryTracks.forEach(track => {
+                    popupContent += `
+                        <li>
+                            <a href="track.html?id=${track.id}">
+                                ${track.title} - ${track.artist}
+                            </a>
+                        </li>`;
+                });
+                popupContent += '</ul></div>';
+            } else {
+                popupContent += '<p>Aucun morceau enregistré pour ce pays</p>';
+            }
+            
+            marker.bindPopup(popupContent);
+        });
+
+        document.getElementById('loading').style.display = 'none';
+        
+    } catch (error) {
+        console.error('Erreur:', error);
+        document.getElementById('loading').textContent = 'Erreur de chargement des données';
+    }
+}
+
+// Au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    loadCountriesAndTracks();
 });
 
-// Ajouter les marqueurs pour les grands pays
-bigCountries.forEach(country => {
-    const marker = L.marker(country.coords, { icon: customIcon }).addTo(map);
-    marker.bindPopup(`
-        <b>${country.name}</b><br>
-        Superficie: ${country.area}
-        <div class="note-form">
-            <textarea id="note-${country.name}" placeholder="Ajoutez une note..."></textarea>
-            <button onclick="saveNote('${country.name}')">Enregistrer</button>
-        </div>
-    `);
+// Fonction pour ajouter un nouveau pays (admin seulement)
+async function addCountry(name, lat, lng) {
+    const { data, error } = await supabase
+        .from('countries')
+        .insert([{ name, latitude: lat, longitude: lng }]);
     
-    // Charger les notes sauvegardées
-    const savedNote = localStorage.getItem(`note-${country.name}`);
-    if (savedNote) {
-        document.getElementById(`note-${country.name}`).value = savedNote;
+    if (error) {
+        console.error('Erreur:', error);
+        return null;
     }
-});
-
-// Fonction pour sauvegarder les notes
-window.saveNote = function(countryName) {
-    const note = document.getElementById(`note-${countryName}`).value;
-    localStorage.setItem(`note-${countryName}`, note);
-    alert("Note enregistrée !");
-};
-
-// Ajouter un nouveau marqueur au clic sur la carte
-map.on('click', function(e) {
-    const title = prompt("Entrez un nom pour ce lieu :");
-    if (title) {
-        const marker = L.marker([e.latlng.lat, e.latlng.lng], { icon: customIcon }).addTo(map);
-        marker.bindPopup(`
-            <b>${title}</b>
-            <div class="note-form">
-                <textarea id="note-custom" placeholder="Ajoutez une note..."></textarea>
-                <button onclick="saveNote('custom')">Enregistrer</button>
-            </div>
-        `);
-    }
-});
+    return data;
+}
