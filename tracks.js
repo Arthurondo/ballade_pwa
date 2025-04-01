@@ -1,155 +1,103 @@
 // Configuration Supabase
-const supabaseUrl = 'https://ssvppdcsahmzhkqdydpd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzH1NikInRScCI6IkyXVcJ9.eyJpe3MfOJZnXBhYnrFzZSIsInJIZifelnN4d3BwZGNhYWbuennhrcWR2ZHBkItivicm9xZ5l6ImPub24ILClyYXQiQENNDiyMzY2MjIainV4cCl6MjA1NzgxMyYyMn0.UHryHgoOPD';
+const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Au chargement de la page
+// Éléments DOM
+const tracksTable = document.getElementById('tracks-table');
+const messageDiv = document.getElementById('message');
+const audioPlayer = document.getElementById('audio-player');
+
+// Charger les morceaux au démarrage
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadCountries();
-    await loadExistingTracks();
-    setupForm();
+    await loadTracks();
 });
 
-// Charger les morceaux existants
-async function loadExistingTracks() {
-    const { data: tracks, error } = await supabase
-        .from('tracks')
-        .select(`
-            id,
-            title,
-            artist,
-            audio_url,
-            description,
-            countries (name)
-        `)
-        .order('created_at', { ascending: false });
+// Fonction principale pour charger les morceaux
+async function loadTracks() {
+    try {
+        const { data: tracks, error } = await supabase
+            .from('songs')  // Remplacez par votre table
+            .select('*')
+            .order('created_at', { ascending: false });
 
-    if (error) {
-        showMessage('Erreur lors du chargement des morceaux: ' + error.message, 'error');
+        if (error) throw error;
+
+        displayTracks(tracks);
+    } catch (error) {
+        showMessage('Erreur: ' + error.message, 'error');
+        console.error('Erreur Supabase:', error);
+    }
+}
+
+// Afficher les morceaux dans un tableau
+function displayTracks(tracks) {
+    if (!tracks || tracks.length === 0) {
+        tracksTable.innerHTML = '<p>Aucun morceau trouvé</p>';
         return;
     }
 
-    const tracksContainer = document.createElement('div');
-    tracksContainer.id = 'existing-tracks';
-    tracksContainer.innerHTML = '<h2>Morceaux existants</h2>';
-
-    if (tracks.length === 0) {
-        tracksContainer.innerHTML += '<p>Aucun morceau enregistré</p>';
-    } else {
-        const table = document.createElement('table');
-        table.innerHTML = `
+    let html = `
+        <table>
             <thead>
                 <tr>
                     <th>Titre</th>
                     <th>Artiste</th>
-                    <th>Pays</th>
+                    <th>Durée</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody></tbody>
-        `;
+            <tbody>
+    `;
 
-        tracks.forEach(track => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${track.title}</td>
-                <td>${track.artist}</td>
-                <td>${track.countries?.name || 'Inconnu'}</td>
+    tracks.forEach(track => {
+        html += `
+            <tr>
+                <td>${track.title || 'Inconnu'}</td>
+                <td>${track.artist || 'Inconnu'}</td>
+                <td>${track.duration || '--:--'}</td>
                 <td>
-                    <button onclick="playTrack('${track.audio_url}')" ${!track.audio_url ? 'disabled' : ''}>Écouter</button>
-                    <button onclick="editTrack('${track.id}')">Modifier</button>
+                    <button data-audio="${track.audio_url || ''}" 
+                            class="play-btn" 
+                            ${!track.audio_url ? 'disabled' : ''}>
+                        ▶ Écouter
+                    </button>
                 </td>
-            `;
-            table.querySelector('tbody').appendChild(row);
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    tracksTable.innerHTML = html;
+
+    // Ajout des écouteurs d'événements
+    document.querySelectorAll('.play-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            playTrack(btn.dataset.audio);
         });
-
-        tracksContainer.appendChild(table);
-    }
-
-    document.querySelector('form').after(tracksContainer);
-}
-
-// Fonction pour jouer un morceau
-window.playTrack = function(audioUrl) {
-    if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        audio.play().catch(e => console.error("Erreur de lecture:", e));
-    }
-};
-
-// Fonction pour modifier un morceau
-window.editTrack = function(trackId) {
-    window.location.href = `edit-track.html?id=${trackId}`;
-};
-
-// Fonction pour charger les pays
-async function loadCountries() {
-    const countrySelect = document.getElementById('country');
-    const { data: countries, error } = await supabase
-        .from('countries')
-        .select('id, name')
-        .order('name', { ascending: true });
-
-    if (error) {
-        showMessage('Erreur lors du chargement des pays: ' + error.message, 'error');
-        return;
-    }
-
-    countries.forEach(country => {
-        const option = document.createElement('option');
-        option.value = country.id;
-        option.textContent = country.name;
-        countrySelect.appendChild(option);
     });
 }
 
-// Configurer le formulaire
-function setupForm() {
-    const form = document.getElementById('trackForm');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const title = document.getElementById('title').value;
-        const artist = document.getElementById('artist').value;
-        const country_id = document.getElementById('country').value;
-        const audio_url = document.getElementById('audio_url').value;
-        const description = document.getElementById('description').value;
-
-        if (!title || !artist || !country_id) {
-            showMessage('Veuillez remplir tous les champs obligatoires', 'error');
-            return;
-        }
-
-        const { data, error } = await supabase
-            .from('tracks')
-            .insert([{ 
-                title, 
-                artist, 
-                country_id,
-                audio_url: audio_url || null,
-                description: description || null
-            }])
-            .select();
-
-        if (error) {
-            showMessage('Erreur lors de l\'ajout: ' + error.message, 'error');
-        } else {
-            showMessage('Morceau ajouté avec succès! ID: ' + data[0].id, 'success');
-            form.reset();
-            // Recharger la liste
-            await loadExistingTracks();
-        }
+// Jouer un morceau
+function playTrack(audioUrl) {
+    if (!audioUrl) return;
+    
+    audioPlayer.src = audioUrl;
+    audioPlayer.play().catch(e => {
+        showMessage('Erreur de lecture: ' + e.message, 'error');
     });
 }
 
 // Afficher un message
 function showMessage(text, type) {
-    const messageDiv = document.getElementById('message');
     messageDiv.textContent = text;
     messageDiv.className = type;
     messageDiv.style.display = 'block';
-
+    
     setTimeout(() => {
         messageDiv.style.display = 'none';
     }, 5000);
 }
+
+// Export pour le type module
+export { supabase, loadTracks, displayTracks, playTrack, showMessage };
