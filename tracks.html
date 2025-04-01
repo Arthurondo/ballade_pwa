@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Morceaux</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,96 +16,8 @@
         <audio id="audio-player" controls></audio>
     </div>
 
-    <script>
-        // Configuration Supabase
-        const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Charger les morceaux au démarrage
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadTracks();
-        });
-
-        // Fonction principale pour charger les morceaux
-        async function loadTracks() {
-            try {
-                const { data: tracks, error } = await supabase
-                    .from('songs')  // Remplacez 'songs' par le nom exact de votre table
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                displayTracks(tracks);
-            } catch (error) {
-                showMessage('Erreur: ' + error.message, 'error');
-                console.error('Erreur Supabase:', error);
-            }
-        }
-
-        // Afficher les morceaux dans un tableau
-        function displayTracks(tracks) {
-            const container = document.getElementById('tracks-table');
-            
-            if (!tracks || tracks.length === 0) {
-                container.innerHTML = '<p>Aucun morceau trouvé</p>';
-                return;
-            }
-
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Artiste</th>
-                            <th>Durée</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            tracks.forEach(track => {
-                html += `
-                    <tr>
-                        <td>${track.title || 'Inconnu'}</td>
-                        <td>${track.artist || 'Inconnu'}</td>
-                        <td>${track.duration || '--:--'}</td>
-                        <td>
-                            <button onclick="playTrack('${track.audio_url}')" 
-                                    ${!track.audio_url ? 'disabled' : ''}>
-                                ▶ Écouter
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        }
-
-        // Jouer un morceau
-        window.playTrack = function(audioUrl) {
-            const player = document.getElementById('audio-player');
-            player.src = audioUrl;
-            player.play().catch(e => {
-                showMessage('Erreur de lecture: ' + e.message, 'error');
-            });
-        };
-
-        // Afficher un message
-        function showMessage(text, type) {
-            const msgDiv = document.getElementById('message');
-            msgDiv.textContent = text;
-            msgDiv.className = type;
-            msgDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                msgDiv.style.display = 'none';
-            }, 5000);
-        }
-    </script>
+    <!-- Inclusion des scripts -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="app.js" type="module"></script>
 </body>
 </html>
