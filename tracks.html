@@ -8,20 +8,14 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Ballade - Liste des Morceaux</h1>
-    </header>
-
-    <main>
+    <div class="container">
+        <h1>Liste des Morceaux</h1>
         <div id="message"></div>
-        
-        <div id="tracks-container">
-            <h2>Chargement des morceaux...</h2>
+        <div id="tracks-table">
             <!-- Le tableau sera généré ici par JavaScript -->
         </div>
-
         <audio id="audio-player" controls></audio>
-    </main>
+    </div>
 
     <script>
         // Configuration Supabase
@@ -34,105 +28,83 @@
             await loadTracks();
         });
 
-        // Fonction pour charger et afficher les morceaux
+        // Fonction principale pour charger les morceaux
         async function loadTracks() {
-            const container = document.getElementById('tracks-container');
-            
             try {
                 const { data: tracks, error } = await supabase
-                    .from('tracks')
-                    .select(`
-                        id,
-                        title,
-                        artist,
-                        audio_url,
-                        description,
-                        created_at,
-                        countries (name)
-                    `)
+                    .from('songs')  // Remplacez 'songs' par le nom exact de votre table
+                    .select('*')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
-                if (tracks.length === 0) {
-                    container.innerHTML = '<h2>Aucun morceau trouvé</h2>';
-                    return;
-                }
-
-                // Création du tableau HTML
-                let html = `
-                    <h2>Liste des morceaux (${tracks.length})</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Titre</th>
-                                <th>Artiste</th>
-                                <th>Pays</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                // Remplissage du tableau
-                tracks.forEach(track => {
-                    html += `
-                        <tr>
-                            <td>${track.title || 'N/A'}</td>
-                            <td>${track.artist || 'N/A'}</td>
-                            <td>${track.countries?.name || 'Inconnu'}</td>
-                            <td>${new Date(track.created_at).toLocaleDateString()}</td>
-                            <td>
-                                <button class="play-btn" onclick="playTrack('${track.audio_url}')" ${!track.audio_url ? 'disabled' : ''}>
-                                    Écouter
-                                </button>
-                                <button class="details-btn" onclick="showDetails(${track.id})">
-                                    Détails
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                html += `</tbody></table>`;
-                container.innerHTML = html;
-
+                displayTracks(tracks);
             } catch (error) {
-                console.error('Erreur:', error);
-                container.innerHTML = `
-                    <h2>Erreur de chargement</h2>
-                    <p>${error.message}</p>
-                `;
+                showMessage('Erreur: ' + error.message, 'error');
+                console.error('Erreur Supabase:', error);
             }
         }
 
-        // Fonction pour jouer un morceau
-        window.playTrack = function(audioUrl) {
-            if (!audioUrl) return;
+        // Afficher les morceaux dans un tableau
+        function displayTracks(tracks) {
+            const container = document.getElementById('tracks-table');
             
+            if (!tracks || tracks.length === 0) {
+                container.innerHTML = '<p>Aucun morceau trouvé</p>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Artiste</th>
+                            <th>Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            tracks.forEach(track => {
+                html += `
+                    <tr>
+                        <td>${track.title || 'Inconnu'}</td>
+                        <td>${track.artist || 'Inconnu'}</td>
+                        <td>${track.duration || '--:--'}</td>
+                        <td>
+                            <button onclick="playTrack('${track.audio_url}')" 
+                                    ${!track.audio_url ? 'disabled' : ''}>
+                                ▶ Écouter
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        // Jouer un morceau
+        window.playTrack = function(audioUrl) {
             const player = document.getElementById('audio-player');
             player.src = audioUrl;
-            player.style.display = 'block';
             player.play().catch(e => {
                 showMessage('Erreur de lecture: ' + e.message, 'error');
             });
         };
 
-        // Fonction pour afficher les détails
-        window.showDetails = function(trackId) {
-            window.location.href = `track-details.html?id=${trackId}`;
-        };
-
-        // Fonction pour afficher des messages
+        // Afficher un message
         function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = type;
-            messageDiv.style.display = 'block';
-
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = type;
+            msgDiv.style.display = 'block';
+            
             setTimeout(() => {
-                messageDiv.style.display = 'none';
+                msgDiv.style.display = 'none';
             }, 5000);
         }
     </script>
