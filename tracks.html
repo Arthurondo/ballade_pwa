@@ -5,90 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Morceaux</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1>Ballade - Liste des Morceaux</h1>
-        <nav>
-            <a href="index.html">Accueil</a>
-            <a href="map.html">Carte</a>
-        </nav>
     </header>
 
     <main>
-        <section id="track-list">
-            <h2>Morceaux enregistrés</h2>
-            <div class="tracks-container">
-                <!-- Les morceaux seront chargés ici -->
-            </div>
-        </section>
+        <div id="message"></div>
+        
+        <div id="tracks-container">
+            <h2>Chargement des morceaux...</h2>
+            <!-- Le tableau sera généré ici par JavaScript -->
+        </div>
 
-        <section id="player">
-            <h3>Lecteur audio</h3>
-            <audio id="audio-player" controls></audio>
-        </section>
+        <audio id="audio-player" controls></audio>
     </main>
 
     <script>
         // Configuration Supabase
-        const supabase = supabase.createClient(
-            'https://sxwppdcaahnzhkqdvdpd.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc'
-        );
+        const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         // Charger les morceaux au démarrage
         document.addEventListener('DOMContentLoaded', async () => {
             await loadTracks();
         });
 
-        // Fonction pour charger les morceaux
+        // Fonction pour charger et afficher les morceaux
         async function loadTracks() {
-            const { data: tracks, error } = await supabase
-                .from('tracks')
-                .select(`
-                    id,
-                    title,
-                    artist,
-                    audio_url,
-                    countries (name)
-                `)
-                .order('created_at', { ascending: false });
+            const container = document.getElementById('tracks-container');
+            
+            try {
+                const { data: tracks, error } = await supabase
+                    .from('tracks')
+                    .select(`
+                        id,
+                        title,
+                        artist,
+                        audio_url,
+                        description,
+                        created_at,
+                        countries (name)
+                    `)
+                    .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('Erreur:', error);
-                return;
-            }
+                if (error) throw error;
 
-            const container = document.querySelector('.tracks-container');
-            container.innerHTML = '';
+                if (tracks.length === 0) {
+                    container.innerHTML = '<h2>Aucun morceau trouvé</h2>';
+                    return;
+                }
 
-            if (tracks.length === 0) {
-                container.innerHTML = '<p>Aucun morceau trouvé</p>';
-                return;
-            }
-
-            tracks.forEach(track => {
-                const trackElement = document.createElement('div');
-                trackElement.className = 'track';
-                trackElement.innerHTML = `
-                    <h3>${track.title}</h3>
-                    <p>Artiste: ${track.artist}</p>
-                    <p>Pays: ${track.countries?.name || 'Inconnu'}</p>
-                    <button onclick="playTrack('${track.audio_url}')">Écouter</button>
-                    <a href="track-details.html?id=${track.id}">Détails</a>
+                // Création du tableau HTML
+                let html = `
+                    <h2>Liste des morceaux (${tracks.length})</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Artiste</th>
+                                <th>Pays</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                 `;
-                container.appendChild(trackElement);
-            });
+
+                // Remplissage du tableau
+                tracks.forEach(track => {
+                    html += `
+                        <tr>
+                            <td>${track.title || 'N/A'}</td>
+                            <td>${track.artist || 'N/A'}</td>
+                            <td>${track.countries?.name || 'Inconnu'}</td>
+                            <td>${new Date(track.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <button class="play-btn" onclick="playTrack('${track.audio_url}')" ${!track.audio_url ? 'disabled' : ''}>
+                                    Écouter
+                                </button>
+                                <button class="details-btn" onclick="showDetails(${track.id})">
+                                    Détails
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                container.innerHTML = `
+                    <h2>Erreur de chargement</h2>
+                    <p>${error.message}</p>
+                `;
+            }
         }
 
         // Fonction pour jouer un morceau
         window.playTrack = function(audioUrl) {
             if (!audioUrl) return;
+            
             const player = document.getElementById('audio-player');
             player.src = audioUrl;
-            player.play();
+            player.style.display = 'block';
+            player.play().catch(e => {
+                showMessage('Erreur de lecture: ' + e.message, 'error');
+            });
         };
+
+        // Fonction pour afficher les détails
+        window.showDetails = function(trackId) {
+            window.location.href = `track-details.html?id=${trackId}`;
+        };
+
+        // Fonction pour afficher des messages
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
     </script>
 </body>
 </html>
