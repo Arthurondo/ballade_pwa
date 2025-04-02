@@ -462,3 +462,51 @@ header {
         width: 100%;
     }
 }
+/* Styles spécifiques pour les morceaux */
+.track-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.track-info {
+    flex: 1;
+}
+
+.track-title {
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.track-composer {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    margin-bottom: 3px;
+}
+
+.track-instruments {
+    color: #3498db;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
+.btn-play {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-play:hover {
+    background: #27ae60;
+}
