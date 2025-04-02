@@ -510,3 +510,44 @@ header {
 .btn-play:hover {
     background: #27ae60;
 }
+/* Widget Météo */
+.weather-widget {
+    background: linear-gradient(135deg, #1e88e5, #0d47a1);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.weather-widget h2 {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.weather-data {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.weather-temp {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.weather-desc {
+    font-size: 1.1rem;
+}
+
+.weather-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.weather-loading {
+    padding: 10px;
+    text-align: center;
+}
