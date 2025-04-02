@@ -1,103 +1,74 @@
-// Configuration Supabase
-const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
 
-// Éléments DOM
-const tracksTable = document.getElementById('tracks-table');
-const messageDiv = document.getElementById('message');
-const audioPlayer = document.getElementById('audio-player');
+// Initialisation Supabase
+const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Charger les morceaux au démarrage
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadTracks();
-});
+// Fonction pour charger et afficher les morceaux
+async function loadSongs() {
+    // 1. Récupération des données
+    const { data: songs, error } = await supabase
+        .from('songs')
+        .select(`
+            id,
+            title,
+            composer:composers(name),
+            instruments:song_instruments(instrument:instruments(name))
+        `)
+        .order('created_at', { ascending: false })
 
-// Fonction principale pour charger les morceaux
-async function loadTracks() {
-    try {
-        const { data: tracks, error } = await supabase
-            .from('songs')  // Remplacez par votre table
-            .select('*')
-            .order('created_at', { ascending: false });
+    if (error) {
+        console.error('Erreur:', error)
+        document.getElementById('message').textContent = 'Erreur de chargement'
+        return
+    }
 
-        if (error) throw error;
+    // 2. Affichage dans le HTML
+    const container = document.getElementById('tracks-table')
+    container.innerHTML = ''
 
-        displayTracks(tracks);
-    } catch (error) {
-        showMessage('Erreur: ' + error.message, 'error');
-        console.error('Erreur Supabase:', error);
+    if (songs.length === 0) {
+        container.innerHTML = '<p>Aucun morceau trouvé</p>'
+        return
+    }
+
+    songs.forEach(song => {
+        // Formatage des instruments
+        const instruments = song.instruments
+            .map(si => si.instrument.name)
+            .join(', ')
+
+        const songElement = document.createElement('div')
+        songElement.className = 'track-item'
+        songElement.innerHTML = `
+            <div class="track-info">
+                <h3 class="track-title">${song.title}</h3>
+                <p class="track-composer">Compositeur: ${song.composer.name}</p>
+                <p class="track-instruments">Instruments: ${instruments}</p>
+            </div>
+            <button class="btn btn-play" onclick="playSong(${song.id})">
+                <i class="fas fa-play"></i> Écouter
+            </button>
+        `
+        container.appendChild(songElement)
+    })
+}
+
+// Fonction pour jouer un morceau
+window.playSong = async function(songId) {
+    const { data: song, error } = await supabase
+        .from('songs')
+        .select('audio_url')
+        .eq('id', songId)
+        .single()
+
+    if (song?.audio_url) {
+        const player = document.getElementById('audio-player')
+        player.src = song.audio_url
+        player.play()
     }
 }
 
-// Afficher les morceaux dans un tableau
-function displayTracks(tracks) {
-    if (!tracks || tracks.length === 0) {
-        tracksTable.innerHTML = '<p>Aucun morceau trouvé</p>';
-        return;
-    }
-
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Artiste</th>
-                    <th>Durée</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    tracks.forEach(track => {
-        html += `
-            <tr>
-                <td>${track.title || 'Inconnu'}</td>
-                <td>${track.artist || 'Inconnu'}</td>
-                <td>${track.duration || '--:--'}</td>
-                <td>
-                    <button data-audio="${track.audio_url || ''}" 
-                            class="play-btn" 
-                            ${!track.audio_url ? 'disabled' : ''}>
-                        ▶ Écouter
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-
-    html += `</tbody></table>`;
-    tracksTable.innerHTML = html;
-
-    // Ajout des écouteurs d'événements
-    document.querySelectorAll('.play-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            playTrack(btn.dataset.audio);
-        });
-    });
-}
-
-// Jouer un morceau
-function playTrack(audioUrl) {
-    if (!audioUrl) return;
-    
-    audioPlayer.src = audioUrl;
-    audioPlayer.play().catch(e => {
-        showMessage('Erreur de lecture: ' + e.message, 'error');
-    });
-}
-
-// Afficher un message
-function showMessage(text, type) {
-    messageDiv.textContent = text;
-    messageDiv.className = type;
-    messageDiv.style.display = 'block';
-    
-    setTimeout(() => {
-        messageDiv.style.display = 'none';
-    }, 5000);
-}
-
-// Export pour le type module
-export { supabase, loadTracks, displayTracks, playTrack, showMessage };
+// Chargement initial
+document.addEventListener('DOMContentLoaded', loadSongs)
