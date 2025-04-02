@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liste des morceaux de l'application Ballade">
     <title>Ballade - Liste des Morceaux</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico">
 </head>
 <body>
     <header>
@@ -22,6 +25,10 @@
     </header>
 
     <main class="container">
+        <noscript>
+            <div class="error">Activez JavaScript pour utiliser cette application</div>
+        </noscript>
+        
         <h1 class="page-title">Liste des Morceaux</h1>
         
         <div id="message" class="message-box"></div>
@@ -31,6 +38,7 @@
         </div>
         
         <div class="audio-player-container">
+            <div class="no-audio">Sélectionnez un morceau</div>
             <audio id="audio-player" controls class="audio-player"></audio>
         </div>
     </main>
