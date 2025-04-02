@@ -3,20 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Morceaux</title>
+    <title>Ballade - Liste des Morceaux</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Liste des Morceaux</h1>
-        <div id="message"></div>
-        <div id="tracks-table">
-            <!-- Le tableau sera généré ici par JavaScript -->
-        </div>
-        <audio id="audio-player" controls></audio>
-    </div>
+    <header>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+            <a href="tracks.html" class="nav-link active">
+                <i class="fas fa-music"></i> Morceaux
+            </a>
+            <a href="map.html" class="nav-link">
+                <i class="fas fa-map-marked-alt"></i> Carte
+            </a>
+        </nav>
+    </header>
 
-    <!-- Inclusion des scripts -->
+    <main class="container">
+        <h1 class="page-title">Liste des Morceaux</h1>
+        
+        <div id="message" class="message-box"></div>
+        
+        <div id="tracks-table" class="tracks-container">
+            <!-- Contenu généré par JavaScript -->
+        </div>
+        
+        <div class="audio-player-container">
+            <audio id="audio-player" controls class="audio-player"></audio>
+        </div>
+    </main>
+
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="tracks.js" type="module"></script>
 </body>
