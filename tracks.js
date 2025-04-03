@@ -1,74 +1,83 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
 
-// Initialisation Supabase
-const supabaseUrl = '*https://sxwppdcaahnzhkqdvdpd.supabase.co'
+const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Fonction pour charger et afficher les morceaux
-async function loadSongs() {
-    // 1. Récupération des données
-    const { data: songs, error } = await supabase
+// Fonction pour charger les morceaux
+async function loadTracks() {
+    const { data: tracks, error } = await supabase
         .from('songs')
         .select(`
             id,
             title,
-            composer:composers(name),
-            instruments:song_instruments(instrument:instruments(name))
+            artist,
+            audio_url,
+            duration
         `)
         .order('created_at', { ascending: false })
 
     if (error) {
         console.error('Erreur:', error)
-        document.getElementById('message').textContent = 'Erreur de chargement'
+        document.getElementById('message').textContent = 'Erreur de chargement des morceaux'
         return
     }
 
-    // 2. Affichage dans le HTML
+    displayTracks(tracks)
+}
+
+// Fonction pour afficher les morceaux
+function displayTracks(tracks) {
     const container = document.getElementById('tracks-table')
     container.innerHTML = ''
 
-    if (songs.length === 0) {
-        container.innerHTML = '<p>Aucun morceau trouvé</p>'
-        return
-    }
-
-    songs.forEach(song => {
-        // Formatage des instruments
-        const instruments = song.instruments
-            .map(si => si.instrument.name)
-            .join(', ')
-
-        const songElement = document.createElement('div')
-        songElement.className = 'track-item'
-        songElement.innerHTML = `
+    tracks.forEach(track => {
+        const trackElement = document.createElement('div')
+        trackElement.className = 'track'
+        trackElement.innerHTML = `
             <div class="track-info">
-                <h3 class="track-title">${song.title}</h3>
-                <p class="track-composer">Compositeur: ${song.composer.name}</p>
-                <p class="track-instruments">Instruments: ${instruments}</p>
+                <h3>${track.title}</h3>
+                <p>${track.artist}</p>
+                <p>${formatDuration(track.duration)}</p>
             </div>
-            <button class="btn btn-play" onclick="playSong(${song.id})">
-                <i class="fas fa-play"></i> Écouter
+            <button class="play-btn" data-audio="${track.audio_url}">
+                <i class="fas fa-play"></i>
             </button>
         `
-        container.appendChild(songElement)
+        container.appendChild(trackElement)
+    })
+
+    // Gestion des clics sur les boutons de lecture
+    document.querySelectorAll('.play-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const audioUrl = e.currentTarget.getAttribute('data-audio')
+            playAudio(audioUrl)
+        })
     })
 }
 
-// Fonction pour jouer un morceau
-window.playSong = async function(songId) {
-    const { data: song, error } = await supabase
-        .from('songs')
-        .select('audio_url')
-        .eq('id', songId)
-        .single()
-
-    if (song?.audio_url) {
-        const player = document.getElementById('audio-player')
-        player.src = song.audio_url
-        player.play()
+// Fonction pour jouer l'audio
+function playAudio(audioUrl) {
+    const audioPlayer = document.getElementById('audio-player')
+    const noAudioMsg = document.querySelector('.no-audio')
+    
+    if (audioUrl) {
+        audioPlayer.src = audioUrl
+        audioPlayer.play()
+        noAudioMsg.style.display = 'none'
+    } else {
+        noAudioMsg.style.display = 'block'
+        noAudioMsg.textContent = 'Aucun fichier audio disponible'
     }
 }
 
-// Chargement initial
-document.addEventListener('DOMContentLoaded', loadSongs)
+// Formatage de la durée
+function formatDuration(seconds) {
+    if (!seconds) return ''
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', loadTracks)
