@@ -33,10 +33,37 @@
         
         <div id="message" class="message-box"></div>
         
+        <!-- Section de recherche -->
+        <div class="search-section">
+            <input type="text" id="search-input" placeholder="Rechercher un morceau..." class="search-input">
+            <button id="search-btn" class="search-btn">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+        </div>
+        
+        <!-- Filtres -->
+        <div class="filters">
+            <select id="genre-filter" class="filter-select">
+                <option value="">Tous les genres</option>
+                <!-- Options seront ajoutées dynamiquement -->
+            </select>
+            
+            <select id="artist-filter" class="filter-select">
+                <option value="">Tous les artistes</option>
+                <!-- Options seront ajoutées dynamiquement -->
+            </select>
+            
+            <button id="reset-filters" class="reset-btn">
+                <i class="fas fa-redo"></i> Réinitialiser
+            </button>
+        </div>
+        
+        <!-- Tableau des morceaux -->
         <div id="tracks-table" class="tracks-container">
             <!-- Contenu généré par JavaScript -->
         </div>
         
+        <!-- Lecteur audio -->
         <div class="audio-player-container">
             <div class="no-audio">Sélectionnez un morceau</div>
             <audio id="audio-player" controls class="audio-player"></audio>
@@ -53,6 +80,50 @@
             </iframe>
         </section>
     </main>
+
+    <!-- Section API -->
+    <section class="api-section">
+        <h2><i class="fas fa-database"></i> Gestion des Morceaux</h2>
+        
+        <div class="api-form">
+            <h3>Ajouter un nouveau morceau</h3>
+            <form id="add-track-form">
+                <input type="text" id="track-title" placeholder="Titre" required>
+                <input type="text" id="track-artist" placeholder="Artiste" required>
+                <input type="text" id="track-genre" placeholder="Genre">
+                <input type="text" id="track-duration" placeholder="Durée (mm:ss)">
+                <input type="url" id="track-url" placeholder="URL du fichier audio">
+                <button type="submit" class="api-btn">
+                    <i class="fas fa-plus"></i> Ajouter
+                </button>
+            </form>
+        </div>
+        
+        <div class="api-form">
+            <h3>Modifier un morceau</h3>
+            <form id="update-track-form">
+                <input type="text" id="update-id" placeholder="ID du morceau" required>
+                <input type="text" id="update-title" placeholder="Nouveau titre">
+                <input type="text" id="update-artist" placeholder="Nouvel artiste">
+                <input type="text" id="update-genre" placeholder="Nouveau genre">
+                <input type="text" id="update-duration" placeholder="Nouvelle durée">
+                <input type="url" id="update-url" placeholder="Nouvelle URL audio">
+                <button type="submit" class="api-btn">
+                    <i class="fas fa-sync-alt"></i> Mettre à jour
+                </button>
+            </form>
+        </div>
+        
+        <div class="api-form">
+            <h3>Supprimer un morceau</h3>
+            <form id="delete-track-form">
+                <input type="text" id="delete-id" placeholder="ID du morceau" required>
+                <button type="submit" class="api-btn delete-btn">
+                    <i class="fas fa-trash-alt"></i> Supprimer
+                </button>
+            </form>
+        </div>
+    </section>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="tracks.js" type="module"></script>
