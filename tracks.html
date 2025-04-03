@@ -3,239 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Liste des morceaux de l'application Ballade">
     <title>Ballade - Liste des Morceaux</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico">
     <style>
-        /* Styles pour la configuration API */
-        .api-config-section {
-            background: #f8f9fa;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-        .config-input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0 15px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-        }
-        .config-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .hidden {
-            display: none;
-        }
-
-        /* Styles pour la liste des morceaux */
-        .track-item {
-            display: flex;
-            align-items: center;
+        .track {
             padding: 10px;
             border-bottom: 1px solid #eee;
-            cursor: pointer;
         }
-        .track-item:hover {
+        .track:hover {
             background-color: #f5f5f5;
-        }
-        .track-info {
-            flex: 1;
-        }
-        .track-title {
-            font-weight: bold;
-        }
-        .track-artist {
-            color: #666;
-        }
-        .track-duration {
-            color: #888;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="main-nav">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> Accueil
-            </a>
-            <a href="tracks.html" class="nav-link active">
-                <i class="fas fa-music"></i> Morceaux
-            </a>
-            <a href="map.html" class="nav-link">
-                <i class="fas fa-map-marked-alt"></i> Carte
-            </a>
-            <button id="toggle-config-btn" class="nav-link">
-                <i class="fas fa-cog"></i> Configuration
-            </button>
-        </nav>
-    </header>
-
-    <main class="container">
-        <!-- Section de configuration API -->
-        <section id="api-config-section" class="api-config-section hidden">
-            <h2><i class="fas fa-key"></i> Configuration API</h2>
-            <div>
-                <label for="api-url">URL Supabase:</label>
-                <input type="text" id="api-url" class="config-input" placeholder="https://votre-projet.supabase.co">
-            </div>
-            <div>
-                <label for="api-key">Clé API:</label>
-                <input type="password" id="api-key" class="config-input" placeholder="sk_xxxxxxxxxxxxxxxx">
-            </div>
-            <button id="save-config-btn" class="config-btn">
-                <i class="fas fa-save"></i> Enregistrer
-            </button>
-            <p id="config-status"></p>
-        </section>
-
-        <h1 class="page-title">Liste des Morceaux</h1>
-        
-        <div id="message" class="message-box"></div>
-        
-        <!-- Section de recherche -->
-        <div class="search-section">
-            <input type="text" id="search-input" placeholder="Rechercher un morceau..." class="search-input">
-            <button id="search-btn" class="search-btn">
-                <i class="fas fa-search"></i> Rechercher
-            </button>
-        </div>
-        
-        <!-- Filtres -->
-        <div class="filters">
-            <select id="genre-filter" class="filter-select">
-                <option value="">Tous les genres</option>
-            </select>
-            
-            <select id="artist-filter" class="filter-select">
-                <option value="">Tous les artistes</option>
-            </select>
-            
-            <button id="reset-filters" class="reset-btn">
-                <i class="fas fa-redo"></i> Réinitialiser
-            </button>
-        </div>
-        
-        <!-- Liste des morceaux -->
-        <div id="tracks-list" class="tracks-container">
-            <!-- Les morceaux seront affichés ici -->
-        </div>
-        
-        <!-- Lecteur audio -->
-        <div class="audio-player-container">
-            <div class="no-audio">Sélectionnez un morceau</div>
-            <audio id="audio-player" controls class="audio-player"></audio>
-        </div>
-    </main>
+    <div id="tracks-container"></div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // Configuration
-        document.getElementById('toggle-config-btn').addEventListener('click', function() {
-            document.getElementById('api-config-section').classList.toggle('hidden');
-        });
+        // Configuration Supabase
+        const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
+        
+        // Initialiser Supabase
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        document.getElementById('save-config-btn').addEventListener('click', function() {
-            const apiUrl = document.getElementById('api-url').value;
-            const apiKey = document.getElementById('api-key').value;
-            
-            if (!apiUrl || !apiKey) {
-                showMessage("Veuillez remplir tous les champs", "error");
-                return;
-            }
-            
-            localStorage.setItem('supabase_config', JSON.stringify({ url: apiUrl, key: apiKey }));
-            showMessage("Configuration enregistrée!", "success");
-            loadTracks();
-        });
-
-        // Fonction pour afficher les morceaux
+        // Fonction pour charger les morceaux
         async function loadTracks() {
-            const config = JSON.parse(localStorage.getItem('supabase_config'));
-            if (!config) {
-                showMessage("Veuillez configurer l'API d'abord", "error");
-                document.getElementById('api-config-section').classList.remove('hidden');
-                return;
-            }
-
             try {
-                const supabase = supabase.createClient(config.url, config.key);
-                const { data: tracks, error } = await supabase
-                    .from('tracks')
+                const { data, error } = await supabase
+                    .from('songs')
                     .select('*');
                 
                 if (error) throw error;
                 
-                displayTracks(tracks);
+                displayTracks(data);
             } catch (error) {
-                showMessage("Erreur lors du chargement des morceaux: " + error.message, "error");
+                console.error("Erreur:", error);
+                document.getElementById('tracks-container').innerHTML = 
+                    `<p>Erreur lors du chargement des morceaux: ${error.message}</p>`;
             }
         }
 
+        // Fonction pour afficher les morceaux
         function displayTracks(tracks) {
-            const tracksList = document.getElementById('tracks-list');
-            tracksList.innerHTML = '';
+            const container = document.getElementById('tracks-container');
             
             if (!tracks || tracks.length === 0) {
-                tracksList.innerHTML = '<p>Aucun morceau disponible</p>';
+                container.innerHTML = "<p>Aucun morceau disponible</p>";
                 return;
             }
             
+            let html = '';
             tracks.forEach(track => {
-                const trackElement = document.createElement('div');
-                trackElement.className = 'track-item';
-                trackElement.innerHTML = `
-                    <div class="track-info">
-                        <div class="track-title">${track.title}</div>
-                        <div class="track-artist">${track.artist}</div>
+                html += `
+                    <div class="track">
+                        <h3>${track.title || 'Titre inconnu'}</h3>
+                        <p>Artiste: ${track.artist || 'Inconnu'}</p>
+                        <p>Durée: ${track.duration || '--:--'}</p>
                     </div>
-                    <div class="track-duration">${track.duration || '--:--'}</div>
                 `;
-                
-                trackElement.addEventListener('click', () => playTrack(track));
-                tracksList.appendChild(trackElement);
             });
+            
+            container.innerHTML = html;
         }
 
-        function playTrack(track) {
-            const audioPlayer = document.getElementById('audio-player');
-            if (track.audio_url) {
-                audioPlayer.src = track.audio_url;
-                audioPlayer.play();
-                document.querySelector('.no-audio').style.display = 'none';
-                audioPlayer.style.display = 'block';
-            } else {
-                showMessage("Aucun fichier audio disponible pour ce morceau", "error");
-            }
-        }
-
-        function showMessage(message, type) {
-            const messageBox = document.getElementById('message');
-            messageBox.textContent = message;
-            messageBox.className = `message-box ${type}`;
-            setTimeout(() => messageBox.textContent = '', 3000);
-        }
-
-        // Au chargement de la page
-        window.addEventListener('DOMContentLoaded', function() {
-            const savedConfig = localStorage.getItem('supabase_config');
-            if (savedConfig) {
-                const config = JSON.parse(savedConfig);
-                document.getElementById('api-url').value = config.url;
-                document.getElementById('api-key').value = config.key;
-                loadTracks();
-            } else {
-                document.getElementById('api-config-section').classList.remove('hidden');
-            }
-        });
+        // Charger les morceaux au démarrage
+        document.addEventListener('DOMContentLoaded', loadTracks);
     </script>
 </body>
 </html>
