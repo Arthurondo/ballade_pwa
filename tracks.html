@@ -8,6 +8,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.ico">
+    <style>
+        /* Styles supplémentaires pour la configuration API */
+        .api-config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .api-config-section h2 {
+            margin-top: 0;
+        }
+        .config-input-group {
+            margin-bottom: 15px;
+        }
+        .config-input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .config-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .config-btn:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -21,6 +58,9 @@
             <a href="map.html" class="nav-link">
                 <i class="fas fa-map-marked-alt"></i> Carte
             </a>
+            <button id="toggle-config-btn" class="nav-link">
+                <i class="fas fa-cog"></i> Configuration
+            </button>
         </nav>
     </header>
 
@@ -29,6 +69,23 @@
             <div class="error">Activez JavaScript pour utiliser cette application</div>
         </noscript>
         
+        <!-- Section de configuration API (cachée par défaut) -->
+        <section id="api-config-section" class="api-config-section hidden">
+            <h2><i class="fas fa-key"></i> Configuration API</h2>
+            <div class="config-input-group">
+                <label for="api-url">https://sxwppdcaahnzhkqdvdpd.supabase.co:</label>
+                <input type="text" id="api-url" class="config-input" placeholder="https://votre-projet.supabase.co">
+            </div>
+            <div class="config-input-group">
+                <label for="api-key">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc:</label>
+                <input type="password" id="api-key" class="config-input" placeholder="sk_xxxxxxxxxxxxxxxx">
+            </div>
+            <button id="save-config-btn" class="config-btn">
+                <i class="fas fa-save"></i> Enregistrer la configuration
+            </button>
+            <p id="config-status"></p>
+        </section>
+
         <h1 class="page-title">Liste des Morceaux</h1>
         
         <div id="message" class="message-box"></div>
@@ -45,12 +102,10 @@
         <div class="filters">
             <select id="genre-filter" class="filter-select">
                 <option value="">Tous les genres</option>
-                <!-- Options seront ajoutées dynamiquement -->
             </select>
             
             <select id="artist-filter" class="filter-select">
                 <option value="">Tous les artistes</option>
-                <!-- Options seront ajoutées dynamiquement -->
             </select>
             
             <button id="reset-filters" class="reset-btn">
@@ -69,7 +124,7 @@
             <audio id="audio-player" controls class="audio-player"></audio>
         </div>
 
-        <!-- Widget Météo avec wttr.in -->
+        <!-- Widget Météo -->
         <section class="weather-widget">
             <h2><i class="fas fa-cloud-sun"></i> Météo à Strasbourg</h2>
             <iframe 
@@ -126,6 +181,46 @@
     </section>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // Gestion de la configuration
+        document.getElementById('toggle-config-btn').addEventListener('click', function() {
+            const configSection = document.getElementById('api-config-section');
+            configSection.classList.toggle('hidden');
+        });
+
+        document.getElementById('save-config-btn').addEventListener('click', function() {
+            const apiUrl = document.getElementById('api-url').value;
+            const apiKey = document.getElementById('api-key').value;
+            
+            if (!apiUrl || !apiKey) {
+                document.getElementById('config-status').textContent = "Veuillez remplir tous les champs";
+                document.getElementById('config-status').style.color = "red";
+                return;
+            }
+            
+            // Stockage dans le localStorage
+            localStorage.setItem('supabase_config', JSON.stringify({
+                url: apiUrl,
+                key: apiKey
+            }));
+            
+            document.getElementById('config-status').textContent = "Configuration enregistrée avec succès!";
+            document.getElementById('config-status').style.color = "green";
+            
+            // Recharge la page pour appliquer les changements
+            setTimeout(() => location.reload(), 1000);
+        });
+
+        // Au chargement de la page, vérifie si une configuration existe
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedConfig = localStorage.getItem('supabase_config');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                document.getElementById('api-url').value = config.url;
+                document.getElementById('api-key').value = config.key;
+            }
+        });
+    </script>
     <script src="tracks.js" type="module"></script>
 </body>
 </html>
