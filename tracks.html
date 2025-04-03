@@ -3,135 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <title>Ballade - Morceaux</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* Styles de base */
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        #status {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+        
+        /* Navigation */
+        .main-nav {
+            background-color: #2c3e50;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #1abc9c;
+        }
+        .nav-link.active {
+            color: #1abc9c;
             font-weight: bold;
         }
-        .loading {
-            background: #e3f2fd;
-            color: #0d47a1;
+        
+        /* Liste des morceaux */
+        .tracks-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .track {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .track:hover {
+            background-color: #f9f9f9;
+        }
+        .track-info {
+            flex: 1;
+        }
+        .track-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        .track-artist {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .play-btn {
+            background: #1abc9c;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .play-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Lecteur audio */
+        .audio-player-container {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .audio-player {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        /* Messages */
+        .message-box {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
         }
         .error {
-            background: #ffebee;
+            background-color: #ffebee;
             color: #c62828;
         }
         .success {
-            background: #e8f5e9;
+            background-color: #e8f5e9;
             color: #2e7d32;
         }
-        .todo {
-            background: #f5f5f5;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+        
+        /* Chargement */
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <h1>Mes Tâches</h1>
-    <div id="status" class="loading">Initialisation...</div>
-    <div id="todos"></div>
+    <header>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+            <a href="tracks.html" class="nav-link active">
+                <i class="fas fa-music"></i> Morceaux
+            </a>
+            <a href="map.html" class="nav-link">
+                <i class="fas fa-map-marked-alt"></i> Carte
+            </a>
+        </nav>
+    </header>
 
+    <main class="container">
+        <h1>Liste des Morceaux</h1>
+        
+        <div id="message" class="message-box hidden"></div>
+        
+        <div id="tracks-table" class="tracks-container">
+            <div class="loading">
+                <i class="fas fa-spinner"></i> Chargement des morceaux...
+            </div>
+        </div>
+        
+        <div class="audio-player-container">
+            <div class="no-audio">Sélectionnez un morceau pour l'écouter</div>
+            <audio id="audio-player" controls class="audio-player hidden"></audio>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // 1. Configuration (À REMPLACER AVEC VOS VRAIES CLÉS)
-        const SUPABASE_URL = 'https://votre-projet.supabase.co';
-        const SUPABASE_KEY = 'votre-cle-anon-publique';
-        
-        // 2. Paramètres de timeout
-        const CONNECTION_TIMEOUT = 5000; // 5 secondes max pour la connexion
-        const DATA_TIMEOUT = 8000; // 8 secondes max pour les données
+        // Configuration Supabase
+        const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 3. Éléments du DOM
-        const statusEl = document.getElementById('status');
-        const todosEl = document.getElementById('todos');
-        
-        // 4. Fonction pour mettre à jour le statut
-        function setStatus(type, message) {
-            statusEl.className = type;
-            statusEl.textContent = message;
-            console.log(`[${type.toUpperCase()}] ${message}`);
-        }
+        // Éléments DOM
+        const tracksContainer = document.getElementById('tracks-table');
+        const audioPlayer = document.getElementById('audio-player');
+        const noAudioMsg = document.querySelector('.no-audio');
+        const messageBox = document.getElementById('message');
 
-        // 5. Fonction pour gérer les erreurs
-        function handleError(error) {
-            console.error('Erreur complète:', error);
-            setStatus('error', `Erreur: ${error.message || 'Problème de connexion'}`);
-            todosEl.innerHTML = '<p>Impossible de charger les tâches. Vérifiez la console (F12) pour plus de détails.</p>';
-        }
-
-        // 6. Vérification de la connexion avec timeout
-        async function checkConnection() {
-            setStatus('loading', 'Vérification de la connexion à Supabase...');
-            
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Timeout: La connexion a pris trop de temps')), CONNECTION_TIMEOUT));
-            
+        // Charger les morceaux
+        async function loadTracks() {
             try {
-                const connectionPromise = supabase.from('todos').select('*').limit(1);
-                
-                await Promise.race([connectionPromise, timeoutPromise]);
-                return true;
-            } catch (err) {
-                handleError(err);
-                return false;
-            }
-        }
+                const { data: tracks, error } = await supabase
+                    .from('songs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-        // 7. Chargement des todos avec timeout
-        async function loadTodos() {
-            setStatus('loading', 'Chargement des tâches...');
-            
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Timeout: Le chargement des données a pris trop de temps')), DATA_TIMEOUT));
-            
-            try {
-                const dataPromise = supabase.from('todos').select('*').order('created_at', { ascending: false });
-                
-                const { data, error } = await Promise.race([dataPromise, timeoutPromise]);
-                
                 if (error) throw error;
                 
-                if (data.length === 0) {
-                    setStatus('success', 'Aucune tâche trouvée');
-                    todosEl.innerHTML = '<p>Pas de tâches à afficher.</p>';
+                if (tracks.length === 0) {
+                    showMessage("Aucun morceau disponible", "info");
+                    tracksContainer.innerHTML = '<div class="empty">Aucun morceau trouvé</div>';
                     return;
                 }
                 
-                setStatus('success', `Tâches chargées (${data.length})`);
-                todosEl.innerHTML = data.map(todo => `
-                    <div class="todo">
-                        <h3>${todo.title || 'Sans titre'}</h3>
-                        ${todo.description ? `<p>${todo.description}</p>` : ''}
-                        <p>Statut: ${todo.completed ? '✅ Terminé' : '🔄 En cours'}</p>
+                displayTracks(tracks);
+            } catch (error) {
+                console.error("Erreur:", error);
+                showMessage("Erreur lors du chargement des morceaux", "error");
+                tracksContainer.innerHTML = `
+                    <div class="error">
+                        <p>Impossible de charger les morceaux</p>
+                        <button onclick="location.reload()" class="retry-btn">
+                            <i class="fas fa-sync-alt"></i> Réessayer
+                        </button>
                     </div>
-                `).join('');
-                
-            } catch (err) {
-                handleError(err);
+                `;
             }
         }
 
-        // 8. Initialisation
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Initialisation du client
-            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Afficher les morceaux
+        function displayTracks(tracks) {
+            let html = '';
             
-            // Vérification de la connexion puis chargement
-            if (await checkConnection()) {
-                await loadTodos();
+            tracks.forEach(track => {
+                html += `
+                    <div class="track" data-id="${track.id}">
+                        <div class="track-info">
+                            <div class="track-title">${track.title || 'Titre inconnu'}</div>
+                            <div class="track-artist">${track.artist || 'Artiste inconnu'}</div>
+                        </div>
+                        <button class="play-btn" data-url="${track.audio_url}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            tracksContainer.innerHTML = html;
+            
+            // Ajouter les événements de lecture
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const audioUrl = this.getAttribute('data-url');
+                    playAudio(audioUrl);
+                });
+            });
+        }
+
+        // Jouer un morceau
+        function playAudio(url) {
+            if (!url) {
+                showMessage("Ce morceau n'a pas de fichier audio associé", "error");
+                return;
             }
-        });
+            
+            audioPlayer.src = url;
+            audioPlayer.classList.remove('hidden');
+            noAudioMsg.classList.add('hidden');
+            audioPlayer.play();
+        }
+
+        // Afficher un message
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            messageBox.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Au chargement de la page
+        document.addEventListener('DOMContentLoaded', loadTracks);
     </script>
 </body>
 </html>
