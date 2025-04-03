@@ -3,241 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Liste des morceaux de l'application Ballade">
-    <title>Ballade - Liste des Morceaux</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico">
+    <title>Todo List</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        .track {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .track:hover {
-            background-color: #f8f9fa;
-        }
-        .track-info {
-            flex: 1;
-        }
-        .track-title {
+        #status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
             font-weight: bold;
         }
-        .track-artist {
-            color: #666;
-            font-size: 0.9em;
-        }
-        .play-btn {
-            background: none;
-            border: none;
-            color: #28a745;
-            font-size: 1.2em;
-            cursor: pointer;
-            margin-left: 15px;
-        }
         .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .todo {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="main-nav">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> Accueil
-            </a>
-            <a href="tracks.html" class="nav-link active">
-                <i class="fas fa-music"></i> Morceaux
-            </a>
-            <a href="map.html" class="nav-link">
-                <i class="fas fa-map-marked-alt"></i> Carte
-            </a>
-        </nav>
-    </header>
+    <h1>Mes Tâches</h1>
+    <div id="status" class="loading">Initialisation...</div>
+    <div id="todos"></div>
 
-    <main class="container">
-        <noscript>
-            <div class="error">Activez JavaScript pour utiliser cette application</div>
-        </noscript>
-        
-        <h1 class="page-title">Liste des Morceaux</h1>
-        
-        <div id="message" class="message-box"></div>
-        
-        <div class="search-section">
-            <input type="text" id="search-input" placeholder="Rechercher un morceau..." class="search-input">
-            <button id="search-btn" class="search-btn">
-                <i class="fas fa-search"></i> Rechercher
-            </button>
-        </div>
-        
-        <div class="filters">
-            <select id="genre-filter" class="filter-select">
-                <option value="">Tous les genres</option>
-            </select>
-            
-            <select id="artist-filter" class="filter-select">
-                <option value="">Tous les artistes</option>
-            </select>
-            
-            <button id="reset-filters" class="reset-btn">
-                <i class="fas fa-redo"></i> Réinitialiser
-            </button>
-        </div>
-        
-        <div id="tracks-table" class="tracks-container">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i> Chargement des morceaux...
-            </div>
-        </div>
-        
-        <div class="audio-player-container">
-            <div class="no-audio">Sélectionnez un morceau</div>
-            <audio id="audio-player" controls class="audio-player"></audio>
-        </div>
-
-        <section class="weather-widget">
-            <h2><i class="fas fa-cloud-sun"></i> Météo à Strasbourg</h2>
-            <iframe 
-                src="https://wttr.in/Strasbourg?format=%l+%c+%t+%h+%w+%m&lang=fr" 
-                class="weather-iframe"
-                frameborder="0"
-                title="Prévisions météo">
-            </iframe>
-        </section>
-    </main>
-
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // Configuration Supabase
-        const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // 1. Configuration (À REMPLACER AVEC VOS VRAIES CLÉS)
+        const SUPABASE_URL = 'https://votre-projet.supabase.co';
+        const SUPABASE_KEY = 'votre-cle-anon-publique';
+        
+        // 2. Paramètres de timeout
+        const CONNECTION_TIMEOUT = 5000; // 5 secondes max pour la connexion
+        const DATA_TIMEOUT = 8000; // 8 secondes max pour les données
 
-        // Charger les morceaux depuis Supabase
-        async function loadTracks() {
+        // 3. Éléments du DOM
+        const statusEl = document.getElementById('status');
+        const todosEl = document.getElementById('todos');
+        
+        // 4. Fonction pour mettre à jour le statut
+        function setStatus(type, message) {
+            statusEl.className = type;
+            statusEl.textContent = message;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // 5. Fonction pour gérer les erreurs
+        function handleError(error) {
+            console.error('Erreur complète:', error);
+            setStatus('error', `Erreur: ${error.message || 'Problème de connexion'}`);
+            todosEl.innerHTML = '<p>Impossible de charger les tâches. Vérifiez la console (F12) pour plus de détails.</p>';
+        }
+
+        // 6. Vérification de la connexion avec timeout
+        async function checkConnection() {
+            setStatus('loading', 'Vérification de la connexion à Supabase...');
+            
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout: La connexion a pris trop de temps')), CONNECTION_TIMEOUT));
+            
             try {
-                const { data: tracks, error } = await supabase
-                    .from('songs')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                const connectionPromise = supabase.from('todos').select('*').limit(1);
+                
+                await Promise.race([connectionPromise, timeoutPromise]);
+                return true;
+            } catch (err) {
+                handleError(err);
+                return false;
+            }
+        }
+
+        // 7. Chargement des todos avec timeout
+        async function loadTodos() {
+            setStatus('loading', 'Chargement des tâches...');
+            
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout: Le chargement des données a pris trop de temps')), DATA_TIMEOUT));
+            
+            try {
+                const dataPromise = supabase.from('todos').select('*').order('created_at', { ascending: false });
+                
+                const { data, error } = await Promise.race([dataPromise, timeoutPromise]);
                 
                 if (error) throw error;
                 
-                displayTracks(tracks);
-                updateFilters(tracks);
-            } catch (error) {
-                console.error("Erreur:", error);
-                showMessage("Erreur lors du chargement des morceaux", "error");
-                document.getElementById('tracks-table').innerHTML = 
-                    '<div class="error">Impossible de charger les morceaux</div>';
-            }
-        }
-
-        // Afficher les morceaux
-        function displayTracks(tracks) {
-            const container = document.getElementById('tracks-table');
-            
-            if (!tracks || tracks.length === 0) {
-                container.innerHTML = '<div class="no-tracks">Aucun morceau disponible</div>';
-                return;
-            }
-            
-            let html = '';
-            tracks.forEach(track => {
-                html += `
-                    <div class="track" data-id="${track.id}">
-                        <div class="track-info">
-                            <div class="track-title">${track.title || 'Titre inconnu'}</div>
-                            <div class="track-artist">${track.artist || 'Artiste inconnu'}</div>
-                        </div>
-                        <button class="play-btn" data-url="${track.audio_url}">
-                            <i class="fas fa-play"></i>
-                        </button>
+                if (data.length === 0) {
+                    setStatus('success', 'Aucune tâche trouvée');
+                    todosEl.innerHTML = '<p>Pas de tâches à afficher.</p>';
+                    return;
+                }
+                
+                setStatus('success', `Tâches chargées (${data.length})`);
+                todosEl.innerHTML = data.map(todo => `
+                    <div class="todo">
+                        <h3>${todo.title || 'Sans titre'}</h3>
+                        ${todo.description ? `<p>${todo.description}</p>` : ''}
+                        <p>Statut: ${todo.completed ? '✅ Terminé' : '🔄 En cours'}</p>
                     </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-            
-            // Ajouter les événements de lecture
-            document.querySelectorAll('.play-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    playTrack(this.getAttribute('data-url'));
-                });
-            });
-        }
-
-        // Mettre à jour les filtres
-        function updateFilters(tracks) {
-            const genres = [...new Set(tracks.map(t => t.genre).filter(Boolean))];
-            const artists = [...new Set(tracks.map(t => t.artist).filter(Boolean))];
-            
-            const genreFilter = document.getElementById('genre-filter');
-            const artistFilter = document.getElementById('artist-filter');
-            
-            genres.forEach(genre => {
-                genreFilter.innerHTML += `<option value="${genre}">${genre}</option>`;
-            });
-            
-            artists.forEach(artist => {
-                artistFilter.innerHTML += `<option value="${artist}">${artist}</option>`;
-            });
-        }
-
-        // Jouer un morceau
-        function playTrack(url) {
-            const audioPlayer = document.getElementById('audio-player');
-            const noAudioMsg = document.querySelector('.no-audio');
-            
-            if (url) {
-                audioPlayer.src = url;
-                audioPlayer.play();
-                noAudioMsg.style.display = 'none';
-                audioPlayer.style.display = 'block';
-            } else {
-                showMessage("Aucun fichier audio disponible pour ce morceau", "error");
+                `).join('');
+                
+            } catch (err) {
+                handleError(err);
             }
         }
 
-        // Afficher un message
-        function showMessage(message, type) {
-            const messageBox = document.getElementById('message');
-            messageBox.textContent = message;
-            messageBox.className = `message-box ${type}`;
-            setTimeout(() => messageBox.textContent = '', 3000);
-        }
-
-        // Au chargement de la page
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTracks();
+        // 8. Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialisation du client
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // Événements des boutons
-            document.getElementById('search-btn').addEventListener('click', filterTracks);
-            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+            // Vérification de la connexion puis chargement
+            if (await checkConnection()) {
+                await loadTodos();
+            }
         });
-
-        // Filtrer les morceaux (à implémenter)
-        function filterTracks() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const genre = document.getElementById('genre-filter').value;
-            const artist = document.getElementById('artist-filter').value;
-            
-            // À implémenter selon vos besoins
-            console.log("Filtrage:", { searchTerm, genre, artist });
-        }
-
-        // Réinitialiser les filtres
-        function resetFilters() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('genre-filter').value = '';
-            document.getElementById('artist-filter').value = '';
-            loadTracks();
-        }
     </script>
 </body>
 </html>
