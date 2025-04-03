@@ -2,242 +2,87 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Liste des morceaux de l'application Ballade">
-    <title>Ballade - Liste des Morceaux</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico">
+    <title>Liste des Morceaux</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
         .track {
-            padding: 12px;
+            padding: 10px;
             border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .track:hover {
-            background-color: #f8f9fa;
-        }
-        .track-info {
-            flex: 1;
-        }
-        .track-title {
-            font-weight: bold;
-        }
-        .track-artist {
-            color: #666;
-            font-size: 0.9em;
-        }
-        .play-btn {
-            background: none;
-            border: none;
-            color: #28a745;
-            font-size: 1.2em;
-            cursor: pointer;
-            margin-left: 15px;
         }
         .loading {
-            text-align: center;
-            padding: 20px;
             color: #666;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="main-nav">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> Accueil
-            </a>
-            <a href="tracks.html" class="nav-link active">
-                <i class="fas fa-music"></i> Morceaux
-            </a>
-            <a href="map.html" class="nav-link">
-                <i class="fas fa-map-marked-alt"></i> Carte
-            </a>
-        </nav>
-    </header>
+    <h1>Liste des Morceaux</h1>
+    <div id="tracks-container">
+        <p class="loading">Chargement en cours...</p>
+    </div>
 
-    <main class="container">
-        <noscript>
-            <div class="error">Activez JavaScript pour utiliser cette application</div>
-        </noscript>
-        
-        <h1 class="page-title">Liste des Morceaux</h1>
-        
-        <div id="message" class="message-box"></div>
-        
-        <div class="search-section">
-            <input type="text" id="search-input" placeholder="Rechercher un morceau..." class="search-input">
-            <button id="search-btn" class="search-btn">
-                <i class="fas fa-search"></i> Rechercher
-            </button>
-        </div>
-        
-        <div class="filters">
-            <select id="genre-filter" class="filter-select">
-                <option value="">Tous les genres</option>
-            </select>
-            
-            <select id="artist-filter" class="filter-select">
-                <option value="">Tous les artistes</option>
-            </select>
-            
-            <button id="reset-filters" class="reset-btn">
-                <i class="fas fa-redo"></i> Réinitialiser
-            </button>
-        </div>
-        
-        <div id="tracks-table" class="tracks-container">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i> Chargement des morceaux...
-            </div>
-        </div>
-        
-        <div class="audio-player-container">
-            <div class="no-audio">Sélectionnez un morceau</div>
-            <audio id="audio-player" controls class="audio-player"></audio>
-        </div>
-
-        <section class="weather-widget">
-            <h2><i class="fas fa-cloud-sun"></i> Météo à Strasbourg</h2>
-            <iframe 
-                src="https://wttr.in/Strasbourg?format=%l+%c+%t+%h+%w+%m&lang=fr" 
-                class="weather-iframe"
-                frameborder="0"
-                title="Prévisions météo">
-            </iframe>
-        </section>
-    </main>
-
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // Configuration Supabase
-        const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Charger les morceaux depuis Supabase
-        async function loadTracks() {
+        // Configuration
+        const SUPABASE_URL = "https://sxwppdcaahnzhkqdvdpd.supabase.co/rest/v1/songs?select=*";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+        
+        // Headers équivalents à votre commande PowerShell
+        const headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json"
+        };
+        
+        // Récupération des données
+        async function getTracks() {
             try {
-                const { data: tracks, error } = await supabase
-                    .from('songs')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                const response = await fetch(SUPABASE_URL, {
+                    method: 'GET',
+                    headers: headers
+                });
                 
-                if (error) throw error;
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
                 
+                const tracks = await response.json();
                 displayTracks(tracks);
-                updateFilters(tracks);
+                
             } catch (error) {
                 console.error("Erreur:", error);
-                showMessage("Erreur lors du chargement des morceaux", "error");
-                document.getElementById('tracks-table').innerHTML = 
-                    '<div class="error">Impossible de charger les morceaux</div>';
+                document.getElementById('tracks-container').innerHTML = 
+                    `<p class="error">Erreur lors du chargement: ${error.message}</p>`;
             }
         }
-
-        // Afficher les morceaux
+        
+        // Affichage des morceaux
         function displayTracks(tracks) {
-            const container = document.getElementById('tracks-table');
+            const container = document.getElementById('tracks-container');
             
             if (!tracks || tracks.length === 0) {
-                container.innerHTML = '<div class="no-tracks">Aucun morceau disponible</div>';
+                container.innerHTML = '<p>Aucun morceau trouvé</p>';
                 return;
             }
             
             let html = '';
             tracks.forEach(track => {
                 html += `
-                    <div class="track" data-id="${track.id}">
-                        <div class="track-info">
-                            <div class="track-title">${track.title || 'Titre inconnu'}</div>
-                            <div class="track-artist">${track.artist || 'Artiste inconnu'}</div>
-                        </div>
-                        <button class="play-btn" data-url="${track.audio_url}">
-                            <i class="fas fa-play"></i>
-                        </button>
+                    <div class="track">
+                        <h3>${track.title || 'Sans titre'}</h3>
+                        <p>Artiste: ${track.artist || 'Inconnu'}</p>
+                        <p>Durée: ${track.duration || '--:--'}</p>
                     </div>
                 `;
             });
             
             container.innerHTML = html;
-            
-            // Ajouter les événements de lecture
-            document.querySelectorAll('.play-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    playTrack(this.getAttribute('data-url'));
-                });
-            });
         }
-
-        // Mettre à jour les filtres
-        function updateFilters(tracks) {
-            const genres = [...new Set(tracks.map(t => t.genre).filter(Boolean))];
-            const artists = [...new Set(tracks.map(t => t.artist).filter(Boolean))];
-            
-            const genreFilter = document.getElementById('genre-filter');
-            const artistFilter = document.getElementById('artist-filter');
-            
-            genres.forEach(genre => {
-                genreFilter.innerHTML += `<option value="${genre}">${genre}</option>`;
-            });
-            
-            artists.forEach(artist => {
-                artistFilter.innerHTML += `<option value="${artist}">${artist}</option>`;
-            });
-        }
-
-        // Jouer un morceau
-        function playTrack(url) {
-            const audioPlayer = document.getElementById('audio-player');
-            const noAudioMsg = document.querySelector('.no-audio');
-            
-            if (url) {
-                audioPlayer.src = url;
-                audioPlayer.play();
-                noAudioMsg.style.display = 'none';
-                audioPlayer.style.display = 'block';
-            } else {
-                showMessage("Aucun fichier audio disponible pour ce morceau", "error");
-            }
-        }
-
-        // Afficher un message
-        function showMessage(message, type) {
-            const messageBox = document.getElementById('message');
-            messageBox.textContent = message;
-            messageBox.className = `message-box ${type}`;
-            setTimeout(() => messageBox.textContent = '', 3000);
-        }
-
-        // Au chargement de la page
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTracks();
-            
-            // Événements des boutons
-            document.getElementById('search-btn').addEventListener('click', filterTracks);
-            document.getElementById('reset-filters').addEventListener('click', resetFilters);
-        });
-
-        // Filtrer les morceaux (à implémenter)
-        function filterTracks() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const genre = document.getElementById('genre-filter').value;
-            const artist = document.getElementById('artist-filter').value;
-            
-            // À implémenter selon vos besoins
-            console.log("Filtrage:", { searchTerm, genre, artist });
-        }
-
-        // Réinitialiser les filtres
-        function resetFilters() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('genre-filter').value = '';
-            document.getElementById('artist-filter').value = '';
-            loadTracks();
-        }
+        
+        // Lancement au chargement de la page
+        window.addEventListener('DOMContentLoaded', getTracks);
     </script>
 </body>
 </html>
