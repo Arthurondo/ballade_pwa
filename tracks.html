@@ -9,24 +9,18 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.ico">
     <style>
-        /* Styles supplémentaires pour la configuration API */
+        /* Styles pour la configuration API */
         .api-config-section {
             background: #f8f9fa;
             padding: 20px;
-            margin-top: 30px;
+            margin: 20px 0;
             border-radius: 8px;
             border: 1px solid #dee2e6;
-        }
-        .api-config-section h2 {
-            margin-top: 0;
-        }
-        .config-input-group {
-            margin-bottom: 15px;
         }
         .config-input {
             width: 100%;
             padding: 8px;
-            margin-top: 5px;
+            margin: 5px 0 15px;
             border: 1px solid #ced4da;
             border-radius: 4px;
         }
@@ -38,11 +32,32 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .config-btn:hover {
-            background-color: #218838;
-        }
         .hidden {
             display: none;
+        }
+
+        /* Styles pour la liste des morceaux */
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .track-item:hover {
+            background-color: #f5f5f5;
+        }
+        .track-info {
+            flex: 1;
+        }
+        .track-title {
+            font-weight: bold;
+        }
+        .track-artist {
+            color: #666;
+        }
+        .track-duration {
+            color: #888;
         }
     </style>
 </head>
@@ -65,23 +80,19 @@
     </header>
 
     <main class="container">
-        <noscript>
-            <div class="error">Activez JavaScript pour utiliser cette application</div>
-        </noscript>
-        
-        <!-- Section de configuration API (cachée par défaut) -->
+        <!-- Section de configuration API -->
         <section id="api-config-section" class="api-config-section hidden">
             <h2><i class="fas fa-key"></i> Configuration API</h2>
-            <div class="config-input-group">
-                <label for="api-url">https://sxwppdcaahnzhkqdvdpd.supabase.co:</label>
+            <div>
+                <label for="api-url">URL Supabase:</label>
                 <input type="text" id="api-url" class="config-input" placeholder="https://votre-projet.supabase.co">
             </div>
-            <div class="config-input-group">
-                <label for="api-key">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc:</label>
+            <div>
+                <label for="api-key">Clé API:</label>
                 <input type="password" id="api-key" class="config-input" placeholder="sk_xxxxxxxxxxxxxxxx">
             </div>
             <button id="save-config-btn" class="config-btn">
-                <i class="fas fa-save"></i> Enregistrer la configuration
+                <i class="fas fa-save"></i> Enregistrer
             </button>
             <p id="config-status"></p>
         </section>
@@ -113,9 +124,9 @@
             </button>
         </div>
         
-        <!-- Tableau des morceaux -->
-        <div id="tracks-table" class="tracks-container">
-            <!-- Contenu généré par JavaScript -->
+        <!-- Liste des morceaux -->
+        <div id="tracks-list" class="tracks-container">
+            <!-- Les morceaux seront affichés ici -->
         </div>
         
         <!-- Lecteur audio -->
@@ -123,69 +134,13 @@
             <div class="no-audio">Sélectionnez un morceau</div>
             <audio id="audio-player" controls class="audio-player"></audio>
         </div>
-
-        <!-- Widget Météo -->
-        <section class="weather-widget">
-            <h2><i class="fas fa-cloud-sun"></i> Météo à Strasbourg</h2>
-            <iframe 
-                src="https://wttr.in/Strasbourg?format=%l+%c+%t+%h+%w+%m&lang=fr" 
-                class="weather-iframe"
-                frameborder="0"
-                title="Prévisions météo">
-            </iframe>
-        </section>
     </main>
-
-    <!-- Section API -->
-    <section class="api-section">
-        <h2><i class="fas fa-database"></i> Gestion des Morceaux</h2>
-        
-        <div class="api-form">
-            <h3>Ajouter un nouveau morceau</h3>
-            <form id="add-track-form">
-                <input type="text" id="track-title" placeholder="Titre" required>
-                <input type="text" id="track-artist" placeholder="Artiste" required>
-                <input type="text" id="track-genre" placeholder="Genre">
-                <input type="text" id="track-duration" placeholder="Durée (mm:ss)">
-                <input type="url" id="track-url" placeholder="URL du fichier audio">
-                <button type="submit" class="api-btn">
-                    <i class="fas fa-plus"></i> Ajouter
-                </button>
-            </form>
-        </div>
-        
-        <div class="api-form">
-            <h3>Modifier un morceau</h3>
-            <form id="update-track-form">
-                <input type="text" id="update-id" placeholder="ID du morceau" required>
-                <input type="text" id="update-title" placeholder="Nouveau titre">
-                <input type="text" id="update-artist" placeholder="Nouvel artiste">
-                <input type="text" id="update-genre" placeholder="Nouveau genre">
-                <input type="text" id="update-duration" placeholder="Nouvelle durée">
-                <input type="url" id="update-url" placeholder="Nouvelle URL audio">
-                <button type="submit" class="api-btn">
-                    <i class="fas fa-sync-alt"></i> Mettre à jour
-                </button>
-            </form>
-        </div>
-        
-        <div class="api-form">
-            <h3>Supprimer un morceau</h3>
-            <form id="delete-track-form">
-                <input type="text" id="delete-id" placeholder="ID du morceau" required>
-                <button type="submit" class="api-btn delete-btn">
-                    <i class="fas fa-trash-alt"></i> Supprimer
-                </button>
-            </form>
-        </div>
-    </section>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // Gestion de la configuration
+        // Configuration
         document.getElementById('toggle-config-btn').addEventListener('click', function() {
-            const configSection = document.getElementById('api-config-section');
-            configSection.classList.toggle('hidden');
+            document.getElementById('api-config-section').classList.toggle('hidden');
         });
 
         document.getElementById('save-config-btn').addEventListener('click', function() {
@@ -193,34 +148,94 @@
             const apiKey = document.getElementById('api-key').value;
             
             if (!apiUrl || !apiKey) {
-                document.getElementById('config-status').textContent = "Veuillez remplir tous les champs";
-                document.getElementById('config-status').style.color = "red";
+                showMessage("Veuillez remplir tous les champs", "error");
                 return;
             }
             
-            // Stockage dans le localStorage
-            localStorage.setItem('supabase_config', JSON.stringify({
-                url: apiUrl,
-                key: apiKey
-            }));
-            
-            document.getElementById('config-status').textContent = "Configuration enregistrée avec succès!";
-            document.getElementById('config-status').style.color = "green";
-            
-            // Recharge la page pour appliquer les changements
-            setTimeout(() => location.reload(), 1000);
+            localStorage.setItem('supabase_config', JSON.stringify({ url: apiUrl, key: apiKey }));
+            showMessage("Configuration enregistrée!", "success");
+            loadTracks();
         });
 
-        // Au chargement de la page, vérifie si une configuration existe
+        // Fonction pour afficher les morceaux
+        async function loadTracks() {
+            const config = JSON.parse(localStorage.getItem('supabase_config'));
+            if (!config) {
+                showMessage("Veuillez configurer l'API d'abord", "error");
+                document.getElementById('api-config-section').classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const supabase = supabase.createClient(config.url, config.key);
+                const { data: tracks, error } = await supabase
+                    .from('tracks')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                displayTracks(tracks);
+            } catch (error) {
+                showMessage("Erreur lors du chargement des morceaux: " + error.message, "error");
+            }
+        }
+
+        function displayTracks(tracks) {
+            const tracksList = document.getElementById('tracks-list');
+            tracksList.innerHTML = '';
+            
+            if (!tracks || tracks.length === 0) {
+                tracksList.innerHTML = '<p>Aucun morceau disponible</p>';
+                return;
+            }
+            
+            tracks.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'track-item';
+                trackElement.innerHTML = `
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                    </div>
+                    <div class="track-duration">${track.duration || '--:--'}</div>
+                `;
+                
+                trackElement.addEventListener('click', () => playTrack(track));
+                tracksList.appendChild(trackElement);
+            });
+        }
+
+        function playTrack(track) {
+            const audioPlayer = document.getElementById('audio-player');
+            if (track.audio_url) {
+                audioPlayer.src = track.audio_url;
+                audioPlayer.play();
+                document.querySelector('.no-audio').style.display = 'none';
+                audioPlayer.style.display = 'block';
+            } else {
+                showMessage("Aucun fichier audio disponible pour ce morceau", "error");
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('message');
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            setTimeout(() => messageBox.textContent = '', 3000);
+        }
+
+        // Au chargement de la page
         window.addEventListener('DOMContentLoaded', function() {
             const savedConfig = localStorage.getItem('supabase_config');
             if (savedConfig) {
                 const config = JSON.parse(savedConfig);
                 document.getElementById('api-url').value = config.url;
                 document.getElementById('api-key').value = config.key;
+                loadTracks();
+            } else {
+                document.getElementById('api-config-section').classList.remove('hidden');
             }
         });
     </script>
-    <script src="tracks.js" type="module"></script>
 </body>
 </html>
