@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Todos</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .todo-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .error {
+            color: red;
+        }
+        #loading {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ma liste de Todos</h1>
+    <div id="loading">Chargement des todos...</div>
+    <div id="todos-container"></div>
+    <div id="error" class="error"></div>
+
+    <script>
+        // Initialiser le client Supabase
+        const supabaseUrl = 'https://sxwppdcaahnzhkqdvdpd.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Fonction pour charger et afficher les todos
+        async function loadTodos() {
+            const todosContainer = document.getElementById('todos-container');
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+
+            try {
+                // Faire la requête
+                const { data: todos, error } = await supabase
+                    .from('todos')
+                    .select('*');
+
+                if (error) {
+                    throw error;
+                }
+
+                // Afficher les todos
+                if (todos && todos.length > 0) {
+                    todosContainer.innerHTML = todos.map(todo => 
+                        `<div class="todo-item">
+                            <h3>${todo.title || 'Sans titre'}</h3>
+                            <p>${todo.description || ''}</p>
+                            <small>Status: ${todo.completed ? 'Terminé' : 'En cours'}</small>
+                        </div>`
+                    ).join('');
+                } else {
+                    todosContainer.innerHTML = '<p>Aucun todo trouvé.</p>';
+                }
+
+                loadingElement.style.display = 'none';
+            } catch (err) {
+                console.error('Erreur:', err);
+                errorElement.textContent = `Erreur lors du chargement des todos: ${err.message}`;
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        // Charger les todos quand la page est prête
+        document.addEventListener('DOMContentLoaded', loadTodos);
+    </script>
+</body>
+</html>
