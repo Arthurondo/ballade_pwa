@@ -1,267 +1,68 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ballade - Morceaux</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Styles de base */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* Navigation */
-        .main-nav {
-            background-color: #2c3e50;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-        }
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-size: 1.1em;
-            transition: color 0.3s;
-        }
-        .nav-link:hover {
-            color: #1abc9c;
-        }
-        .nav-link.active {
-            color: #1abc9c;
-            font-weight: bold;
-        }
-        
-        /* Liste des morceaux */
-        .tracks-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: 20px;
-            overflow: hidden;
-        }
-        .track {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-        }
-        .track:hover {
-            background-color: #f9f9f9;
-        }
-        .track-info {
-            flex: 1;
-        }
-        .track-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-        }
-        .track-artist {
-            color: #666;
-            font-size: 0.9em;
-        }
-        .play-btn {
-            background: #1abc9c;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-        .play-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        /* Lecteur audio */
-        .audio-player-container {
-            margin-top: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .audio-player {
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        /* Messages */
-        .message-box {
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .error {
-            background-color: #ffebee;
-            color: #c62828;
-        }
-        .success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        /* Chargement */
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-        }
-        .fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <!-- ... autres balises head ... -->
+    <!-- IMPORTATION DE SUPABASE -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <header>
-        <nav class="main-nav">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> Accueil
-            </a>
-            <a href="tracks.html" class="nav-link active">
-                <i class="fas fa-music"></i> Morceaux
-            </a>
-            <a href="map.html" class="nav-link">
-                <i class="fas fa-map-marked-alt"></i> Carte
-            </a>
-        </nav>
-    </header>
+    <!-- ... votre contenu HTML ... -->
 
-    <main class="container">
-        <h1>Liste des Morceaux</h1>
-        
-        <div id="message" class="message-box hidden"></div>
-        
-        <div id="tracks-table" class="tracks-container">
-            <div class="loading">
-                <i class="fas fa-spinner"></i> Chargement des morceaux...
-            </div>
-        </div>
-        
-        <div class="audio-player-container">
-            <div class="no-audio">Sélectionnez un morceau pour l'écouter</div>
-            <audio id="audio-player" controls class="audio-player hidden"></audio>
-        </div>
-    </main>
-
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // Configuration Supabase
-        const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Éléments DOM
-        const tracksContainer = document.getElementById('tracks-table');
-        const audioPlayer = document.getElementById('audio-player');
-        const noAudioMsg = document.querySelector('.no-audio');
-        const messageBox = document.getElementById('message');
-
-        // Charger les morceaux
-        async function loadTracks() {
+        // INITIALISATION CORRECTE DE SUPABASE
+        document.addEventListener('DOMContentLoaded', function() {
             try {
-                const { data: tracks, error } = await supabase
-                    .from('songs')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
+                // 1. Configuration
+                const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
+                const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
                 
-                if (tracks.length === 0) {
-                    showMessage("Aucun morceau disponible", "info");
-                    tracksContainer.innerHTML = '<div class="empty">Aucun morceau trouvé</div>';
-                    return;
+                // 2. Vérification que Supabase est chargé
+                if (!window.supabase) {
+                    throw new Error("La bibliothèque Supabase n'a pas été chargée correctement");
                 }
                 
-                displayTracks(tracks);
+                // 3. Création du client
+                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                
+                // 4. Vérification de la connexion
+                supabaseClient
+                    .from('songs')
+                    .select('*')
+                    .limit(1)
+                    .then(response => {
+                        if (response.error) throw response.error;
+                        console.log("Connexion à Supabase réussie !");
+                        loadTracks(supabaseClient); // Fonction pour charger vos morceaux
+                    })
+                    .catch(error => {
+                        console.error("Erreur de connexion:", error);
+                        showError("Impossible de se connecter à la base de données");
+                    });
+                    
             } catch (error) {
-                console.error("Erreur:", error);
-                showMessage("Erreur lors du chargement des morceaux", "error");
-                tracksContainer.innerHTML = `
-                    <div class="error">
-                        <p>Impossible de charger les morceaux</p>
-                        <button onclick="location.reload()" class="retry-btn">
-                            <i class="fas fa-sync-alt"></i> Réessayer
-                        </button>
-                    </div>
-                `;
+                console.error("Erreur d'initialisation:", error);
+                showError("Erreur technique lors de l'initialisation");
             }
-        }
+        });
 
-        // Afficher les morceaux
-        function displayTracks(tracks) {
-            let html = '';
-            
-            tracks.forEach(track => {
-                html += `
-                    <div class="track" data-id="${track.id}">
-                        <div class="track-info">
-                            <div class="track-title">${track.title || 'Titre inconnu'}</div>
-                            <div class="track-artist">${track.artist || 'Artiste inconnu'}</div>
-                        </div>
-                        <button class="play-btn" data-url="${track.audio_url}">
-                            <i class="fas fa-play"></i>
-                        </button>
-                    </div>
-                `;
-            });
-            
-            tracksContainer.innerHTML = html;
-            
-            // Ajouter les événements de lecture
-            document.querySelectorAll('.play-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const audioUrl = this.getAttribute('data-url');
-                    playAudio(audioUrl);
+        function loadTracks(supabase) {
+            // Votre code pour charger les morceaux
+            supabase
+                .from('songs')
+                .select('*')
+                .then(response => {
+                    if (response.error) throw response.error;
+                    displayTracks(response.data);
                 });
-            });
         }
 
-        // Jouer un morceau
-        function playAudio(url) {
-            if (!url) {
-                showMessage("Ce morceau n'a pas de fichier audio associé", "error");
-                return;
-            }
-            
-            audioPlayer.src = url;
-            audioPlayer.classList.remove('hidden');
-            noAudioMsg.classList.add('hidden');
-            audioPlayer.play();
+        function showError(message) {
+            // Afficher un message d'erreur à l'utilisateur
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.prepend(errorDiv);
         }
-
-        // Afficher un message
-        function showMessage(message, type) {
-            messageBox.textContent = message;
-            messageBox.className = `message-box ${type}`;
-            messageBox.classList.remove('hidden');
-            
-            setTimeout(() => {
-                messageBox.classList.add('hidden');
-            }, 3000);
-        }
-
-        // Au chargement de la page
-        document.addEventListener('DOMContentLoaded', loadTracks);
     </script>
 </body>
 </html>
