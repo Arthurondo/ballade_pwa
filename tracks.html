@@ -1,67 +1,242 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- ... autres balises head ... -->
-    <!-- IMPORTATION DE SUPABASE -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liste des morceaux de l'application Ballade">
+    <title>Ballade - Liste des Morceaux</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico">
+    <style>
+        .track {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .track:hover {
+            background-color: #f8f9fa;
+        }
+        .track-info {
+            flex: 1;
+        }
+        .track-title {
+            font-weight: bold;
+        }
+        .track-artist {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .play-btn {
+            background: none;
+            border: none;
+            color: #28a745;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <!-- ... votre contenu HTML ... -->
+    <header>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+            <a href="tracks.html" class="nav-link active">
+                <i class="fas fa-music"></i> Morceaux
+            </a>
+            <a href="map.html" class="nav-link">
+                <i class="fas fa-map-marked-alt"></i> Carte
+            </a>
+        </nav>
+    </header>
 
+    <main class="container">
+        <noscript>
+            <div class="error">Activez JavaScript pour utiliser cette application</div>
+        </noscript>
+        
+        <h1 class="page-title">Liste des Morceaux</h1>
+        
+        <div id="message" class="message-box"></div>
+        
+        <div class="search-section">
+            <input type="text" id="search-input" placeholder="Rechercher un morceau..." class="search-input">
+            <button id="search-btn" class="search-btn">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+        </div>
+        
+        <div class="filters">
+            <select id="genre-filter" class="filter-select">
+                <option value="">Tous les genres</option>
+            </select>
+            
+            <select id="artist-filter" class="filter-select">
+                <option value="">Tous les artistes</option>
+            </select>
+            
+            <button id="reset-filters" class="reset-btn">
+                <i class="fas fa-redo"></i> Réinitialiser
+            </button>
+        </div>
+        
+        <div id="tracks-table" class="tracks-container">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Chargement des morceaux...
+            </div>
+        </div>
+        
+        <div class="audio-player-container">
+            <div class="no-audio">Sélectionnez un morceau</div>
+            <audio id="audio-player" controls class="audio-player"></audio>
+        </div>
+
+        <section class="weather-widget">
+            <h2><i class="fas fa-cloud-sun"></i> Météo à Strasbourg</h2>
+            <iframe 
+                src="https://wttr.in/Strasbourg?format=%l+%c+%t+%h+%w+%m&lang=fr" 
+                class="weather-iframe"
+                frameborder="0"
+                title="Prévisions météo">
+            </iframe>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // INITIALISATION CORRECTE DE SUPABASE
-        document.addEventListener('DOMContentLoaded', function() {
+        // Configuration Supabase
+        const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Charger les morceaux depuis Supabase
+        async function loadTracks() {
             try {
-                // 1. Configuration
-                const supabaseUrl = "https://sxwppdcaahnzhkqdvdpd.supabase.co";
-                const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4d3BwZGNhYWhuemhrcWR2ZHBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyMzY2MjIsImV4cCI6MjA1NzgxMjYyMn0.UHtyHqsOPDExggrz5lQmeKAyuOJZhXeVSlASKc6z5sc";
-                
-                // 2. Vérification que Supabase est chargé
-                if (!window.supabase) {
-                    throw new Error("La bibliothèque Supabase n'a pas été chargée correctement");
-                }
-                
-                // 3. Création du client
-                const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-                
-                // 4. Vérification de la connexion
-                supabaseClient
+                const { data: tracks, error } = await supabase
                     .from('songs')
                     .select('*')
-                    .limit(1)
-                    .then(response => {
-                        if (response.error) throw response.error;
-                        console.log("Connexion à Supabase réussie !");
-                        loadTracks(supabaseClient); // Fonction pour charger vos morceaux
-                    })
-                    .catch(error => {
-                        console.error("Erreur de connexion:", error);
-                        showError("Impossible de se connecter à la base de données");
-                    });
-                    
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                displayTracks(tracks);
+                updateFilters(tracks);
             } catch (error) {
-                console.error("Erreur d'initialisation:", error);
-                showError("Erreur technique lors de l'initialisation");
+                console.error("Erreur:", error);
+                showMessage("Erreur lors du chargement des morceaux", "error");
+                document.getElementById('tracks-table').innerHTML = 
+                    '<div class="error">Impossible de charger les morceaux</div>';
             }
-        });
-
-        function loadTracks(supabase) {
-            // Votre code pour charger les morceaux
-            supabase
-                .from('songs')
-                .select('*')
-                .then(response => {
-                    if (response.error) throw response.error;
-                    displayTracks(response.data);
-                });
         }
 
-        function showError(message) {
-            // Afficher un message d'erreur à l'utilisateur
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = message;
-            document.body.prepend(errorDiv);
+        // Afficher les morceaux
+        function displayTracks(tracks) {
+            const container = document.getElementById('tracks-table');
+            
+            if (!tracks || tracks.length === 0) {
+                container.innerHTML = '<div class="no-tracks">Aucun morceau disponible</div>';
+                return;
+            }
+            
+            let html = '';
+            tracks.forEach(track => {
+                html += `
+                    <div class="track" data-id="${track.id}">
+                        <div class="track-info">
+                            <div class="track-title">${track.title || 'Titre inconnu'}</div>
+                            <div class="track-artist">${track.artist || 'Artiste inconnu'}</div>
+                        </div>
+                        <button class="play-btn" data-url="${track.audio_url}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Ajouter les événements de lecture
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    playTrack(this.getAttribute('data-url'));
+                });
+            });
+        }
+
+        // Mettre à jour les filtres
+        function updateFilters(tracks) {
+            const genres = [...new Set(tracks.map(t => t.genre).filter(Boolean))];
+            const artists = [...new Set(tracks.map(t => t.artist).filter(Boolean))];
+            
+            const genreFilter = document.getElementById('genre-filter');
+            const artistFilter = document.getElementById('artist-filter');
+            
+            genres.forEach(genre => {
+                genreFilter.innerHTML += `<option value="${genre}">${genre}</option>`;
+            });
+            
+            artists.forEach(artist => {
+                artistFilter.innerHTML += `<option value="${artist}">${artist}</option>`;
+            });
+        }
+
+        // Jouer un morceau
+        function playTrack(url) {
+            const audioPlayer = document.getElementById('audio-player');
+            const noAudioMsg = document.querySelector('.no-audio');
+            
+            if (url) {
+                audioPlayer.src = url;
+                audioPlayer.play();
+                noAudioMsg.style.display = 'none';
+                audioPlayer.style.display = 'block';
+            } else {
+                showMessage("Aucun fichier audio disponible pour ce morceau", "error");
+            }
+        }
+
+        // Afficher un message
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('message');
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            setTimeout(() => messageBox.textContent = '', 3000);
+        }
+
+        // Au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTracks();
+            
+            // Événements des boutons
+            document.getElementById('search-btn').addEventListener('click', filterTracks);
+            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+        });
+
+        // Filtrer les morceaux (à implémenter)
+        function filterTracks() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const genre = document.getElementById('genre-filter').value;
+            const artist = document.getElementById('artist-filter').value;
+            
+            // À implémenter selon vos besoins
+            console.log("Filtrage:", { searchTerm, genre, artist });
+        }
+
+        // Réinitialiser les filtres
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('genre-filter').value = '';
+            document.getElementById('artist-filter').value = '';
+            loadTracks();
         }
     </script>
 </body>
